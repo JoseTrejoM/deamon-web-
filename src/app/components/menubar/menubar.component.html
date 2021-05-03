@@ -1,0 +1,9 @@
+<p-menubar [model]="items">
+    <ng-template pTemplate="start">
+        <img src="assets/images/logoC_rosa.png" height="30" class="p-mr-2">
+    </ng-template>
+
+    <ng-template pTemplate="end">
+      <button pButton pRipple type="button" (click)="logOff()" icon="pi pi-fw pi-power-off" class="p-button-rounded p-button-danger p-button-outlined"></button>
+    </ng-template>
+</p-menubar>
