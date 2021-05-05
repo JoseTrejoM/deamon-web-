@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginResponse } from 'src/app/models/loginresponse.model';
-import { UserModel } from 'src/app/models/user.model';
+import { User } from 'src/app/models/user.model';
 import { LoginService } from 'src/app/services/login.service';
 
 import Swal from 'sweetalert2'
@@ -14,11 +14,11 @@ import Swal from 'sweetalert2'
 })
 export class LoginComponent implements OnInit {
 
-  user: UserModel = new UserModel();
+  user: User = new User();
   isInvalid: boolean = false;
   messageInvalid: string = '';
 
-  userNew: UserModel = new UserModel();
+  userNew: User = new User();
   userDialog: boolean = false;
   isNewUserInvalid: boolean = false;
 
@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
 
   openNew(form: NgForm) {
     form.resetForm();
-    this.userNew = new UserModel();
+    this.userNew = new User();
     this.userDialog = true;
   }
 
@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
     this.userNew.tipo = 'admin';
 
     this.showLoading();
-    this.loginService.createUser(this.userNew).then((data:UserModel)=>{
+    this.loginService.createUser(this.userNew).then((data:User)=>{
       this.userDialog = false;
       Swal.close();
     }).catch(err => {

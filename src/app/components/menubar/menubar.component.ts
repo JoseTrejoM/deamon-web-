@@ -19,19 +19,21 @@ export class MenubarComponent implements OnInit {
       {
         label: 'Home',
         icon: 'pi pi-fw pi-home',
-        routerLink: "/home"
+        routerLink: '/home'
       },
       {
         label: 'Clientes',
-        routerLink: "customer"
+        routerLink: '/customer'
       },
       {
-        label: 'Autorizacion',
-        icon: 'pi pi-fw pi-check'
+        label: 'Polizas',
+        icon: 'pi pi-fw pi-check',
+        routerLink: '/insurance'
       },
       {
         label: 'Usuarios',
-        icon: 'pi pi-fw pi-users'
+        icon: 'pi pi-fw pi-users',
+        routerLink: '/user'
       }
     ];
   }

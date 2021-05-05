@@ -31,6 +31,8 @@ import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { CustomerComponent } from './components/customer/customer.component';
 import { MenubarComponent } from './components/menubar/menubar.component';
+import { UserComponent } from './components/user/user.component';
+import { InsuranceComponent } from './components/insurance/insurance.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import { MenubarComponent } from './components/menubar/menubar.component';
     HomeComponent,
     LoginComponent,
     CustomerComponent,
-    MenubarComponent
+    MenubarComponent,
+    UserComponent,
+    InsuranceComponent
   ],
   imports: [
     BrowserModule,

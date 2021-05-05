@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { UserModel } from '../models/user.model';
+import { User } from '../models/user.model';
 import { LoginResponse } from '../models/loginresponse.model';
 
 import { map } from 'rxjs/operators';
@@ -13,7 +13,7 @@ export class LoginService {
 
   constructor(private http: HttpClient) { }
 
-  async getValidateLogin(user: UserModel) {
+  async getValidateLogin(user: User) {
     return await this.http.post<LoginResponse>(`${this.URL_API}/user/login`, user).pipe(
       map((resp: LoginResponse) => {
         this.saveLoginData(resp);
@@ -22,9 +22,9 @@ export class LoginService {
     ).toPromise<LoginResponse>();
   }
 
-  async createUser(user: UserModel) {
-    return await this.http.post<UserModel>(`${this.URL_API}/user/create`, user)
-      .toPromise<UserModel>();
+  async createUser(user: User) {
+    return await this.http.post<User>(`${this.URL_API}/user/create`, user)
+      .toPromise<User>();
   }
 
   private saveLoginData(loginResponse: LoginResponse) {

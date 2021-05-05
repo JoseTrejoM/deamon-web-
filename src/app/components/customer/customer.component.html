@@ -1,11 +1,19 @@
+<app-menubar></app-menubar>
 <p-toast></p-toast>
-<p-toolbar styleClass="p-mb-4">
+<!--p-toolbar styleClass="p-mb-4">
   <ng-template pTemplate="left">
     <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
   </ng-template>
-</p-toolbar>
+</p-toolbar-->
 
-<p-table [value]="customers">
+<p-table [value]="customers" styleClass="p-datatable-striped">
+  <ng-template pTemplate="caption">
+        <div class="p-d-flex p-ai-center p-jc-between">
+            Clientes
+            <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
+        </div>
+    </ng-template>
+
   <ng-template pTemplate="header">
     <tr>
       <th>Nombre</th>
