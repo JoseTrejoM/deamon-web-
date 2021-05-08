@@ -22,18 +22,20 @@ insurances: Insurance[] = [];
       let idx: number = 0;
       let today: Date = new Date();
 
-      data.forEach((element: Customer) => {
+      let insurancesTemp: Insurance[] = [];
+      data.forEach((customer: Customer) => {
         idx++;
         let rand: number = Math.floor(Math.random() * 10) + 1;
         let auth: Insurance = new Insurance();
-        auth.cliente = element.nombre;
+        auth.cliente = customer.nombre;
         auth.poliza = 'POL' + today.getFullYear() + '0000' + idx;
         auth.fecha = today;
         auth.formaPago = ((rand % 2) == 0) ? 'Efectivo' : 'TDC';
         auth.noAutorizacion = idx.toString();
         auth.periodoPago = ((rand % 2) == 0) ? 'Trimestral' : 'Mensual';
-        this.insurances.push(auth);
+        insurancesTemp.push(auth);
       });
+      this.insurances = insurancesTemp;
 
     });
 

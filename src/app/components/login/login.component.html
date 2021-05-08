@@ -28,12 +28,12 @@
       <div class="p-grid p-justify-center p-align-center">
 
         <div class="p-mt-4">
-          <input name="email" type="text" pInputText [(ngModel)]="user.correo" [ngModelOptions]="{standalone: true}" required email placeholder="Email">
+          <input name="email" #email type="text" pInputText [(ngModel)]="user.correo" required email placeholder="Email">
           <p-message severity="error" *ngIf="f.submitted && !user.correo"></p-message>
         </div>
 
         <div class="p-mt-4">
-          <p-password name="password" [(ngModel)]="user.contrasenia" [feedback]="false" [ngModelOptions]="{standalone: true}" required placeholder="Password"></p-password>
+          <p-password name="password" #password [(ngModel)]="user.contrasenia" [feedback]="false" [toggleMask]="true" required placeholder="Password"></p-password>
           <p-message severity="error" *ngIf="f.submitted && !user.contrasenia"></p-message>
         </div>
 
@@ -63,32 +63,32 @@
 </div>
 
 <form #fn="ngForm">
-<p-dialog [(visible)]="userDialog" [style]="{width: '450px'}" header="Registro" [modal]="true" styleClass="p-fluid" [baseZIndex]="10000" >
+<p-dialog [(visible)]="showDialog" [style]="{width: '400px'}" header="Registro" [modal]="true" styleClass="p-fluid" [baseZIndex]="10000" >
 
-  <ng-template pTemplate="content">
+  <!--ng-template pTemplate="content"-->
 
     <div class="p-grid p-justify-center p-align-center">
 
       <div class="p-mt-4">
-        <input name="email" type="text" pInputText [(ngModel)]="userNew.correo" [ngModelOptions]="{standalone: true}" required email placeholder="Email">
+        <input name="email" type="text" pInputText [(ngModel)]="userNew.correo" required email placeholder="Email">
         <p-message severity="error" *ngIf="fn.submitted && !userNew.correo"></p-message>
       </div>
 
       <div class="p-mt-4">
-        <p-password name="password" [(ngModel)]="userNew.contrasenia" [feedback]="false" [ngModelOptions]="{standalone: true}" required placeholder="Password"></p-password>
+        <p-password name="password" [(ngModel)]="userNew.contrasenia" [feedback]="false" required placeholder="Password"></p-password>
         <p-message severity="error" *ngIf="fn.submitted && !userNew.contrasenia"></p-message>
       </div>
 
     </div>
 
-  </ng-template>
+  <!--/ng-template-->
 
   <div class="p-mt-4">
     <p-message severity="error" *ngIf="fn.submitted && isNewUserInvalid" text="{{messageInvalid}}"></p-message>
   </div>
 
   <ng-template pTemplate="footer">
-    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="userDialog = false"></button>
+    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="showDialog = false"></button>
     <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="saveUser()"></button>
   </ng-template>
 

@@ -19,28 +19,38 @@ export class MenubarComponent implements OnInit {
       {
         label: 'Home',
         icon: 'pi pi-fw pi-home',
-        routerLink: '/home'
+        command: ()=>{
+          this.router.navigate([{ outlets: {mod: ['home'] } }]);
+        }
       },
       {
         label: 'Clientes',
-        routerLink: '/customer'
+        command: ()=>{
+          this.router.navigate([{ outlets: {mod: ['customer'] } }]);
+        }
       },
       {
         label: 'Polizas',
         icon: 'pi pi-fw pi-check',
-        routerLink: '/insurance'
+        command: ()=>{
+          this.router.navigate([{ outlets: {mod: ['insurance'] } }]);
+        }
       },
       {
         label: 'Usuarios',
         icon: 'pi pi-fw pi-users',
-        routerLink: '/user'
+        command: ()=>{
+          this.router.navigate([{ outlets: {mod: ['user'] } }]);
+        }
       }
     ];
+
+    this.router.navigate([{ outlets: {mod: ['home'] } }]);
   }
 
   logOff(){
     this.loginService.clearLoginData();
-    this.router.navigate(['login']);
+    this.router.navigateByUrl('/login');
   }
 
 }

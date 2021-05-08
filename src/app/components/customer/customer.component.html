@@ -1,26 +1,31 @@
-<app-menubar></app-menubar>
+<!--app-menubar></app-menubar-->
 <p-toast></p-toast>
-<!--p-toolbar styleClass="p-mb-4">
-  <ng-template pTemplate="left">
-    <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
-  </ng-template>
-</p-toolbar-->
 
-<p-table [value]="customers" styleClass="p-datatable-striped">
+<p-table #dtc [value]="customers" styleClass="p-datatable-striped" [rows]="10" [paginator]="true" [globalFilterFields]="['nombre']"
+[rowHover]="true" dataKey="id" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} clientes"
+  [showCurrentPageReport]="true">
   <ng-template pTemplate="caption">
-        <div class="p-d-flex p-ai-center p-jc-between">
-            Clientes
-            <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
-        </div>
-    </ng-template>
+    <div class="p-d-flex p-ai-center p-jc-between">
+      Clientes
+      <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="dtc.filterGlobal($event.target.value, 'contains')" placeholder="Buscar..." />
+      </span>
+    </div>
+  </ng-template>
 
   <ng-template pTemplate="header">
     <tr>
-      <th>Nombre</th>
-      <th>CURP</th>
-      <th>Fecha de nacimiento</th>
-      <th>Sexo</th>
-      <th ></th>
+      <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon>
+      </th>
+      <th pSortableColumn="curp">CURP <p-sortIcon field="curp"></p-sortIcon>
+      </th>
+      <th pSortableColumn="fechanacimiento">Fecha de nacimiento <p-sortIcon field="fechanacimiento"></p-sortIcon>
+      </th>
+      <th pSortableColumn="sexo">Sexo <p-sortIcon field="sexo"></p-sortIcon>
+      </th>
+      <th></th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-customer>
@@ -38,12 +43,9 @@
   </ng-template>
 </p-table>
 
-<p-progressSpinner *ngIf="showLoading"></p-progressSpinner>
+<p-dialog [(visible)]="showDialog" [style]="{width: '450px'}" header="Registro" [modal]="true" styleClass="p-fluid" [baseZIndex]="10000" [draggable]="false" [resizable]="true">
 
-<p-dialog [(visible)]="customerDialog" [style]="{width: '450px'}" header="Registro"
-[modal]="true" styleClass="p-fluid" [baseZIndex]="10000" [draggable]="false" [resizable]="true" >
-
-  <ng-template pTemplate="content" >
+  <ng-template pTemplate="content">
 
     <div class="p-field">
       <label for="name">Nombre</label>
@@ -58,14 +60,14 @@
       <small class="p-error" *ngIf="submitted && !customer.curp">Required</small>
     </div>
 
-    <div class="p-field" >
+    <div class="p-field">
       <label for="description">Fecha nacimiento</label>
       <p-inputMask mask="99/99/9999" [(ngModel)]="customer.fechanacimiento" placeholder="99/99/9999" slotChar="dd/mm/yyyy"></p-inputMask>
       <!--p-calendar [(ngModel)]="customer.fechaNac" [style]="{width: '250px'}" yearRange="1980:2021" inputId="navigators"></p-calendar-->
       <small class="p-error" *ngIf="submitted && !customer.fechanacimiento">Required</small>
     </div>
 
-    <div >
+    <div>
       <label for="description">Sexo</label>
       <br>
       <div class="p-field-radiobutton">

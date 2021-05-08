@@ -5,7 +5,7 @@ import { LoginResponse } from 'src/app/models/loginresponse.model';
 import { User } from 'src/app/models/user.model';
 import { LoginService } from 'src/app/services/login.service';
 
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
   messageInvalid: string = '';
 
   userNew: User = new User();
-  userDialog: boolean = false;
+  showDialog: boolean = false;
   isNewUserInvalid: boolean = false;
 
   constructor(private router: Router, private loginService: LoginService) { }
@@ -27,21 +27,19 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  loginIn(form: NgForm) {
+  async loginIn(form: NgForm) {
+    console.log(form);
     if (!this.user.correo || !this.user.contrasenia) {
       console.log(form.submitted);
       return;
     }
 
     this.showLoading();
-    this.loginService.getValidateLogin(this.user).then((data: LoginResponse) => {
+    await this.loginService.getValidateLogin(this.user).then((data: LoginResponse) => {
+      this.router.navigateByUrl('/main');
       Swal.close();
-      this.router.navigate(['home']);
     }).catch(err => {
-      //console.log(err);
-      setTimeout(()=>{
-
-
+//setTimeout(()=>{
       this.isInvalid = true;
       if (err.status && err.status == 400) {
         this.messageInvalid = 'Usuario o contraseña no validos';
@@ -49,15 +47,14 @@ export class LoginComponent implements OnInit {
         this.messageInvalid = 'Error inesperado';
       }
       Swal.close();
-    }, 3000);
-
+//}, 3000);
     });
   }
 
   openNew(form: NgForm) {
     form.resetForm();
     this.userNew = new User();
-    this.userDialog = true;
+    this.showDialog = true;
   }
 
   saveUser() {
@@ -68,12 +65,11 @@ export class LoginComponent implements OnInit {
 
     this.showLoading();
     this.loginService.createUser(this.userNew).then((data:User)=>{
-      this.userDialog = false;
+      this.showDialog = false;
       Swal.close();
     }).catch(err => {
       console.log(err);
       this.isNewUserInvalid = true;
-      //this.showLoading = false;
       if (err.status && err.status == 400) {
         this.messageInvalid = 'El usuario ya existe';
       } else {

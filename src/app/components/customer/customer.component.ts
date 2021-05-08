@@ -5,6 +5,8 @@ import { CustomerService } from 'src/app/services/customer.service';
 import { ConfirmationService } from 'primeng/api';
 import { MessageService } from 'primeng/api';
 
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-customer',
   templateUrl: './customer.component.html',
@@ -18,8 +20,7 @@ export class CustomerComponent implements OnInit {
   columNames: any[] = [];
 
   submitted: boolean = false;
-  customerDialog: boolean = false;
-  showLoading: boolean = false;
+  showDialog: boolean = false;
 
   constructor(private customerService: CustomerService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
@@ -34,9 +35,9 @@ export class CustomerComponent implements OnInit {
     this.getCustomersAll();
   }
 
-  getCustomersAll(){
-    this.customerService.getCustomersAll().then((data: Customer[]) => {
-      data.forEach(customer => {
+  async getCustomersAll(){
+    await this.customerService.getCustomersAll().then((data: Customer[]) => {
+      data.forEach((customer: Customer) => {
         customer.fechaNac = new Date(customer.fechaNac);
         customer.fechanacimiento = this.parseDayOrMoth(customer.fechaNac.getDate()) + "/" + this.parseDayOrMoth(customer.fechaNac.getMonth() + 1) + "/" + customer.fechaNac.getFullYear();
       });
@@ -58,18 +59,18 @@ export class CustomerComponent implements OnInit {
     this.customer = new Customer();
     this.customer.sexo = 'M';
     this.submitted = false;
-    this.customerDialog = true;
+    this.showDialog = true;
   }
 
   hideDialog() {
-    this.customerDialog = false;
+    this.showDialog = false;
     this.submitted = false;
   }
 
   editCustomer(customer: Customer) {
     this.customer = { ...customer };
     this.customer.fechaNac = new Date(customer.fechaNac);
-    this.customerDialog = true;
+    this.showDialog = true;
   }
 
   deleteCustomer(customer: Customer) {
@@ -78,15 +79,15 @@ export class CustomerComponent implements OnInit {
       message: '¿Esta seguro de eliminar a ' + customer.nombre + '?',
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.showLoading = true;
-        this.customerService.deleteCustomers(customer.idCliente).then((data: Customer) => {
-          this.showLoading = false;
-          this.customers = this.customers.filter(val => val.idCliente !== customer.idCliente);
+      accept: async () => {
+        this.showLoading();
+        await this.customerService.deleteCustomers(customer.idCliente).then((data: Customer) => {
+          this.customers = this.customers.filter((val: Customer) => val.idCliente !== customer.idCliente);
           this.customer = new Customer();
           this.messageService.add({ severity: 'success', summary: 'Successful', detail: data.nombre + ' cliente eliminado ', life: 3000 });
+          Swal.close();
         }).catch(err => {
-          this.showLoading = false;
+          Swal.close();
         });
       }
     });
@@ -101,33 +102,35 @@ export class CustomerComponent implements OnInit {
 
     this.submitted = true;
     if (this.customer.nombre.trim()) {
-      this.showLoading = true;
       if (this.customer.idCliente && this.customer.idCliente > 0) {
         this.updateCustomer(this.customer);
       } else {
         this.createCustomer(this.customer);
       }
-      this.showLoading = false;
     }
   }
 
-  private createCustomer(customer: Customer) {
-    this.customerService.createCustomers(customer).then((data: Customer) => {
+  private async createCustomer(customer: Customer) {
+    this.showLoading();
+    await this.customerService.createCustomers(customer).then((data: Customer) => {
       this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Cliente creado', life: 3000 });
 
       this.customers.push(data);
-      this.customerDialog = false;
+      this.showDialog = false;
       this.customer = new Customer();
+      Swal.close();
     });
   }
 
-  private updateCustomer(customer: Customer) {
-    this.customerService.updateCustomers(customer).then((data: Customer) => {
+  private async updateCustomer(customer: Customer) {
+    this.showLoading();
+    await this.customerService.updateCustomers(customer).then((data: Customer) => {
       this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Cliente actualizado', life: 3000 });
 
       this.customers[this.findIndexById(data.idCliente)] = data;
-      this.customerDialog = false;
+      this.showDialog = false;
       this.customer = new Customer();
+      Swal.close();
     });
   }
 
@@ -140,6 +143,15 @@ export class CustomerComponent implements OnInit {
       }
     }
     return index;
+  }
+
+  private showLoading(){
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'info',
+      text: 'Espere por favor...'
+    });
+    Swal.showLoading();
   }
 
 }

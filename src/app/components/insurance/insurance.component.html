@@ -1,19 +1,32 @@
-<app-menubar></app-menubar>
-<p-table [value]="insurances" styleClass="p-datatable-striped">
+<!--app-menubar></app-menubar-->
+<p-table #dti [value]="insurances" styleClass="p-datatable-striped" [rows]="10" [paginator]="true" [globalFilterFields]="['cliente']"
+[rowHover]="true" dataKey="id" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} polizas"
+  [showCurrentPageReport]="true">
   <ng-template pTemplate="caption">
-        <div class="p-d-flex p-ai-center p-jc-between">
-            Polizas
-        </div>
-    </ng-template>
+    <div class="p-d-flex p-ai-center p-jc-between">
+      Polizas
+
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="dti.filterGlobal($event.target.value, 'contains')" placeholder="Buscar..." />
+      </span>
+    </div>
+  </ng-template>
 
   <ng-template pTemplate="header">
     <tr>
-      <th>Cliente</th>
-      <th>Poliza</th>
-      <th>No. autorizacion</th>
-      <th>Fecha</th>
-      <th >Forma de pago</th>
-      <th >Periodo pago</th>
+      <th pSortableColumn="cliente">Cliente <p-sortIcon field="cliente"></p-sortIcon>
+      </th>
+      <th pSortableColumn="poliza">Poliza <p-sortIcon field="poliza"></p-sortIcon>
+      </th>
+      <th pSortableColumn="autorizacion">No. autorizacion <p-sortIcon field="autorizacion"></p-sortIcon>
+      </th>
+      <th pSortableColumn="fecha">Fecha <p-sortIcon field="fecha"></p-sortIcon>
+      </th>
+      <th pSortableColumn="formapago">Forma de pago <p-sortIcon field="formapago"></p-sortIcon>
+      </th>
+      <th pSortableColumn="periodopago">Periodo de pago <p-sortIcon field="periodopago"></p-sortIcon>
+      </th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-insurance>
