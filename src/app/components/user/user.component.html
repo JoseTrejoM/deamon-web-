@@ -46,12 +46,12 @@
 
       <div class="p-mt-4">
         <input name="email" type="text" pInputText [(ngModel)]="userNew.correo" required email placeholder="Email">
-        <p-message severity="error" *ngIf="fn.submitted && !userNew.correo"></p-message>
+        <p-message severity="error" *ngIf="fn.submitted && !userNew.correo" text="Requerido"></p-message>
       </div>
 
       <div class="p-mt-4">
         <p-password name="password" [(ngModel)]="userNew.contrasenia" [feedback]="false" required placeholder="Password"></p-password>
-        <p-message severity="error" *ngIf="fn.submitted && !userNew.contrasenia"></p-message>
+        <p-message severity="error" *ngIf="fn.submitted && !userNew.contrasenia" text="Requerido"></p-message>
       </div>
 
     </div>
