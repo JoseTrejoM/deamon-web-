@@ -29,7 +29,7 @@
       <td> {{user.correo}} </td>
       <td> {{user.tipo}} </td>
       <td>
-        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editUser(user)"></button>
+        <button pButton pRipple icon="pi pi-pencil" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink p-button-rounded p-button-success p-mr-2" (click)="editUser(user)"></button>
         <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteUser(user)"></button>
       </td>
     </tr>
@@ -63,8 +63,8 @@
   </div-->
 
   <ng-template pTemplate="footer">
-    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="showDialog = false"></button>
-    <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="saveOrUpdateUser()"></button>
+    <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveOrUpdateUser()"></button>
+    <button pButton pRipple label="Cancelar" icon="pi pi-times" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink" (click)="showDialog = false"></button>
   </ng-template>
 
 </p-dialog>

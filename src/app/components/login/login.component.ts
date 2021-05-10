@@ -40,13 +40,15 @@ export class LoginComponent implements OnInit {
       Swal.close();
     }).catch(err => {
 //setTimeout(()=>{
-      this.isInvalid = true;
+      //this.isInvalid = true;
+      let messageError = '';
       if (err.status && err.status == 400) {
-        this.messageInvalid = 'Usuario o contraseña no validos';
+        messageError = 'Usuario o contraseña no validos';
       } else {
-        this.messageInvalid = 'Error inesperado';
+        messageError = 'Error inesperado intente mas tarde';
       }
       Swal.close();
+      this.showError(messageError);
 //}, 3000);
     });
   }
@@ -63,19 +65,25 @@ export class LoginComponent implements OnInit {
     }
     this.userNew.tipo = 'admin';
 
+    this.showDialog = false;
     this.showLoading();
     this.loginService.createUser(this.userNew).then((data:User)=>{
+      //this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'usuario creado', life: 3000 });
       this.showDialog = false;
       Swal.close();
+      this.showSuccess('Usuario ' + data.correo + ' creado');
     }).catch(err => {
       console.log(err);
-      this.isNewUserInvalid = true;
+      //this.isNewUserInvalid = true;
+      let messageError = '';
       if (err.status && err.status == 400) {
-        this.messageInvalid = 'El usuario ya existe';
+        messageError = 'El usuario ya existe';
       } else {
-        this.messageInvalid = 'Error inesperado';
+        messageError = 'Error inesperado intente mas tarde';
       }
       Swal.close();
+      this.showError(messageError);
+      //this.messageService.add({ severity: 'error', summary: 'Error', detail: messageError, life: 3000 });
     });
   }
 
@@ -86,6 +94,22 @@ export class LoginComponent implements OnInit {
       text: 'Espere por favor...'
     });
     Swal.showLoading();
+  }
+
+  private showSuccess(message: string){
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'success',
+      text: message
+    });
+  }
+
+  private showError(message: string){
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'error',
+      text: message
+    });
   }
 
 }

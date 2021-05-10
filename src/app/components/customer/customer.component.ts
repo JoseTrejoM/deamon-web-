@@ -79,6 +79,10 @@ export class CustomerComponent implements OnInit {
       message: '¿Esta seguro de eliminar a ' + customer.nombre + '?',
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Si',
+      acceptButtonStyleClass: 'p-button-primary',
+      rejectLabel: 'No',
+      rejectButtonStyleClass: 'p-button-danger',
       accept: async () => {
         this.showLoading();
         await this.customerService.deleteCustomers(customer.idCliente).then((data: Customer) => {

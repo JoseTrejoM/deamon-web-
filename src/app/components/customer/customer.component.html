@@ -1,6 +1,4 @@
 <!--app-menubar></app-menubar-->
-<p-toast></p-toast>
-
 <p-table #dtc [value]="customers" styleClass="p-datatable-striped" [rows]="10" [paginator]="true" [globalFilterFields]="['nombre']"
 [rowHover]="true" dataKey="id" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} clientes"
   [showCurrentPageReport]="true">
@@ -35,7 +33,7 @@
       <td> {{ customer.fechaNac | date:'dd/MM/YYYY' }} </td>
       <td> {{customer.sexo}} </td>
       <td>
-        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editCustomer(customer)"></button>
+        <button pButton pRipple icon="pi pi-pencil" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink p-button-rounded p-button-success p-mr-2" (click)="editCustomer(customer)"></button>
         <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteCustomer(customer)"></button>
       </td>
 
@@ -84,8 +82,8 @@
   </ng-template>
 
   <ng-template pTemplate="footer">
-    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-    <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="saveOrUpdateCustomer()"></button>
+    <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveOrUpdateCustomer()"></button>
+    <button pButton pRipple label="Cancelar" icon="pi pi-times" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink" (click)="hideDialog()"></button>
   </ng-template>
 
 </p-dialog>

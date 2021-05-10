@@ -51,6 +51,10 @@ export class UserComponent implements OnInit {
       message: '¿Esta seguro de eliminar a ' + user.correo + '?',
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Si',
+      acceptButtonStyleClass: 'p-button-primary',
+      rejectLabel: 'No',
+      rejectButtonStyleClass: 'p-button-danger',
       accept: async () => {
         //this.showLoading = true;
         this.showLoading();
