@@ -70,7 +70,10 @@ export class CustomerComponent implements OnInit {
   editCustomer(customer: Customer) {
     this.customer = { ...customer };
     this.customer.fechaNac = new Date(customer.fechaNac);
+    this.customer.fechanacimiento = this.customer.fechaNac.getDate() + '/' + (this.customer.fechaNac.getMonth() + 1) + '/' + this.customer.fechaNac.getFullYear(); 
     this.showDialog = true;
+    console.log(customer);
+    console.log(this.customer);
   }
 
   deleteCustomer(customer: Customer) {

@@ -70,11 +70,11 @@
       <br>
       <div class="p-field-radiobutton">
         <p-radioButton name="sexo" value="M" [(ngModel)]="customer.sexo" inputId="sexo1"></p-radioButton>
-        <label for="sexo1">Hombre</label>
+        <label for="sexo1">Masculino</label>
       </div>
       <div class="p-field-radiobutton">
         <p-radioButton name="sexo" value="F" [(ngModel)]="customer.sexo" inputId="sexo2"></p-radioButton>
-        <label for="sexo2">Mujer</label>
+        <label for="sexo2">Femenino</label>
       </div>
       <small class="p-error" *ngIf="submitted && !customer.sexo">Required</small>
     </div>
