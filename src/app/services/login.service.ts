@@ -2,28 +2,31 @@ import { Injectable } from '@angular/core';
 import { User } from '../models/user.model';
 import { LoginResponse } from '../models/loginresponse.model';
 
-//import { map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { UserService } from './user.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
-  URL_API: string = 'http://35.225.234.94:8080/api';
 
   constructor(private userService: UserService) { }
 
-  async getValidateLogin(user: User) {
-    return await this.userService.userLogin(user).then(
-      (resp: LoginResponse) => {
-        this.saveLoginData(resp);
-        return resp;
-      }
-    );
+  getValidateLogin(user: User): Observable<LoginResponse> {
+    return this.userService.userLogin(user).pipe(
+      map(resp => {
+      this.saveLoginData(resp);
+      return resp;
+    })/*,
+    catchError(err =>{
+      return throwError(err);
+    })*/
+  );
   }
 
-  async createUser(user: User) {
-    return await this.userService.createUsers(user);
+  createUser(user: User): Observable<User> {
+    return this.userService.createUsers(user);
   }
 
   private saveLoginData(loginResponse: LoginResponse) {

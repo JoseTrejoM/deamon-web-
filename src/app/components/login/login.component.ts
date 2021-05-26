@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LoginResponse } from 'src/app/models/loginresponse.model';
 import { User } from 'src/app/models/user.model';
 import { LoginService } from 'src/app/services/login.service';
 
@@ -14,48 +13,40 @@ import Swal from 'sweetalert2';
 })
 export class LoginComponent implements OnInit {
 
-  user: User = new User();
-  isInvalid: boolean = false;
-  messageInvalid: string = '';
-
-  userNew: User = new User();
+  user!: User;
+  userNew!: User;
   showDialog: boolean = false;
-  isNewUserInvalid: boolean = false;
 
   constructor(private router: Router, private loginService: LoginService) { }
 
   ngOnInit(): void {
+    this.user = { idUsuario: 0, correo: '', contrasenia: '', tipo: '' };
+    this.userNew = this.user;
   }
 
-  async loginIn(form: NgForm) {
-    console.log(form);
-    if (!this.user.correo || !this.user.contrasenia) {
-      console.log(form.submitted);
+  loginIn(form: NgForm) {
+    if (form.invalid) {
       return;
     }
 
     this.showLoading();
-    await this.loginService.getValidateLogin(this.user).then((data: LoginResponse) => {
-      this.router.navigateByUrl('/main');
-      Swal.close();
-    }).catch(err => {
-//setTimeout(()=>{
-      //this.isInvalid = true;
-      let messageError = '';
-      if (err.status && err.status == 400) {
-        messageError = 'Usuario o contraseña no validos';
-      } else {
-        messageError = 'Error inesperado intente mas tarde';
-      }
-      Swal.close();
-      this.showError(messageError);
-//}, 3000);
-    });
+    this.loginService.getValidateLogin(this.user).subscribe(
+      (data) => {
+        console.log(data.user);
+        this.router.navigateByUrl('/main');
+        Swal.close();
+      }, (err) => {
+        //console.log(err);
+        //setTimeout(()=>{
+        Swal.close();
+        this.withError(err, 'Usuario o contraseña no validos');
+        //}, 3000);
+      });
   }
 
   openNew(form: NgForm) {
     form.resetForm();
-    this.userNew = new User();
+    this.userNew = { idUsuario: 0, correo: '', contrasenia: '', tipo: '' };
     this.showDialog = true;
   }
 
@@ -67,27 +58,27 @@ export class LoginComponent implements OnInit {
 
     this.showDialog = false;
     this.showLoading();
-    this.loginService.createUser(this.userNew).then((data:User)=>{
-      //this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'usuario creado', life: 3000 });
-      this.showDialog = false;
+    this.loginService.createUser(this.userNew).subscribe((data: User) => {
       Swal.close();
       this.showSuccess('Usuario ' + data.correo + ' creado');
-    }).catch(err => {
-      console.log(err);
-      //this.isNewUserInvalid = true;
-      let messageError = '';
-      if (err.status && err.status == 400) {
-        messageError = 'El usuario ya existe';
-      } else {
-        messageError = 'Error inesperado intente mas tarde';
-      }
+    }, (err) => {
       Swal.close();
-      this.showError(messageError);
-      //this.messageService.add({ severity: 'error', summary: 'Error', detail: messageError, life: 3000 });
+      this.withError(err, 'El usuario ya existe');
     });
   }
 
-  private showLoading(){
+  private withError(err: any, msgError: string) {
+    console.log(err);
+    let messageError = '';
+    if (err.status && err.status == 400) {
+      messageError = msgError;
+    } else {
+      messageError = 'Error inesperado intente mas tarde';
+    }
+    this.showError(messageError);
+  }
+
+  private showLoading() {
     Swal.fire({
       allowOutsideClick: false,
       icon: 'info',
@@ -96,7 +87,7 @@ export class LoginComponent implements OnInit {
     Swal.showLoading();
   }
 
-  private showSuccess(message: string){
+  private showSuccess(message: string) {
     Swal.fire({
       allowOutsideClick: false,
       icon: 'success',
@@ -104,7 +95,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  private showError(message: string){
+  private showError(message: string) {
     Swal.fire({
       allowOutsideClick: false,
       icon: 'error',

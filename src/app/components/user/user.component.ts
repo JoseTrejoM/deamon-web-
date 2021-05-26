@@ -17,21 +17,22 @@ import { NgForm } from '@angular/forms';
 export class UserComponent implements OnInit {
 
   users: User[] = [];
-  userNew: User = new User();
+  userNew!: User;
   submitted: boolean = false;
   showDialog: boolean = false;
+  userEmpty: User = {idUsuario: 0, correo: '', contrasenia: '', tipo: ''};
 
   constructor(private userService: UserService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
-    this.userService.getCustomersAll().then((data:User[])=>{
+    this.userService.getCustomersAll().subscribe((data:User[])=>{
       this.users = data;
     });
   }
 
   openNew(form: NgForm) {
     form.resetForm();
-    this.userNew = new User();
+    this.userNew = this.userEmpty;
     this.showDialog = true;
   }
 
@@ -55,18 +56,15 @@ export class UserComponent implements OnInit {
       acceptButtonStyleClass: 'p-button-primary',
       rejectLabel: 'No',
       rejectButtonStyleClass: 'p-button-danger',
-      accept: async () => {
-        //this.showLoading = true;
+      accept: () => {
         this.showLoading();
-        await this.userService.deleteUsers(user.idUsuario).then((data: User) => {
-          //this.showLoading = false;
+        this.userService.deleteUsers(user.idUsuario).subscribe((data: User) => {
           this.users = this.users.filter((val: User) => val.idUsuario !== user.idUsuario);
-          //this.customer = new Customer();
           this.messageService.add({ severity: 'success', summary: 'Successful', detail: data.correo + ' usuario eliminado ', life: 3000 });
           Swal.close();
-        }).catch(err => {
+        }, (err) => {
+          console.log(err);
           Swal.close();
-          //this.showLoading = false;
         });
       }
     });
@@ -87,27 +85,31 @@ export class UserComponent implements OnInit {
     }
   }
 
-  private async createUser(user: User) {
+  private createUser(user: User) {
     this.showLoading();
-    await this.userService.createUsers(user).then((data: User) => {
+    this.userService.createUsers(user).subscribe((data: User) => {
       this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Usuario creado', life: 3000 });
 
       this.users.push(data);
       this.showDialog = false;
-      this.userNew = new User();
+      this.userNew = this.userEmpty;
       Swal.close();
+    },(err) => {
+      console.log(err);
     });
   }
 
-  private async updateUser(user: User) {
+  private updateUser(user: User) {
     this.showLoading();
-    await this.userService.updateUsers(user).then((data: User) => {
+    this.userService.updateUsers(user).subscribe((data: User) => {
       this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Usuario actualizado', life: 3000 });
 
       this.users[this.findIndexById(data.idUsuario)] = data;
       this.showDialog = false;
-      this.userNew = new User();
+      this.userNew = this.userEmpty;
       Swal.close();
+    },(err) => {
+      console.log(err);
     });
   }
 

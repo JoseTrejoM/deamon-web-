@@ -4,7 +4,7 @@
     <p-card class="p-grid p-ai-center vertical-container" [style]="{width: '400px'}">
       <ng-template pTemplate="header">
         <div class="p-grid p-jc-center">
-          <img [src]="'assets/images/logoC_rosa.png'" [style]="{'width': '90%', 'display':'block'}">
+          <img [src]="'assets/images/logoC_rosa.png'" [style]="{'width': '70%', 'display':'block'}">
         </div>
 
         <div [style]="{color:'#ff0391', 'font-family': 'dancing_script'}" class="p-grid p-jc-center">
@@ -33,12 +33,8 @@
         </div>
 
         <div class="p-mt-4">
-          <p-password name="password" #password [(ngModel)]="user.contrasenia" [feedback]="false" [toggleMask]="true" required placeholder="Password" style="width:200px"></p-password>
+          <p-password name="password" #password [(ngModel)]="user.contrasenia" [feedback]="false" [toggleMask]="true" required placeholder="Password"></p-password>
           <p-message severity="error" *ngIf="f.submitted && !user.contrasenia"></p-message>
-        </div>
-
-        <div class="p-mt-4">
-          <p-message severity="error" *ngIf="f.submitted && isInvalid" text="{{messageInvalid}}"></p-message>
         </div>
 
       </div>
@@ -50,9 +46,9 @@
       <ng-template pTemplate="footer">
         <div class="p-grid p-justify-center p-align-center">
 
-          <button pButton pRipple type="button" label="Registrar" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink" (click)="openNew(fn)" ></button>
+          <button pButton pRipple type="button" label="Registrar" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink p-shadow-24" (click)="openNew(fn)" ></button>
           <span>&nbsp;&nbsp;&nbsp;</span>
-          <p-button type="submit" class="p-button-info" label="Continuar" styleClass="p-button-info" ></p-button>
+          <p-button type="submit" label="Continuar" styleClass="p-button-info p-shadow-24" ></p-button>
 
         </div>
       </ng-template>
@@ -82,10 +78,6 @@
     </div>
 
   <!--/ng-template-->
-
-  <div class="p-mt-4">
-    <p-message severity="error" *ngIf="fn.submitted && isNewUserInvalid" text="{{messageInvalid}}"></p-message>
-  </div>
 
   <ng-template pTemplate="footer">
     <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveUser()"></button>

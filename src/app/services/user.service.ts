@@ -1,42 +1,37 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {User} from '../models/user.model';
+import { User } from '../models/user.model';
 import { LoginResponse } from '../models/loginresponse.model';
+import { environment } from './../../environments/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  URL_API: string = 'http://35.225.234.94:8080/api';
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
-
-  async createUsers(user: User) {
-    return await this.http.post<User>(`${this.URL_API}/user/create`, user)
-      .toPromise<User>();
+  createUsers(user: User): Observable<User> {
+    return this.http.post<User>(`${environment.URL_API}/user/create`, user);
   }
 
-  async getCustomersAll() {
-    return await this.http.get<User[]>(`${this.URL_API}/user/all`)
-      .toPromise<User[]>();
+  getCustomersAll(): Observable<User[]> {
+    return this.http.get<User[]>(`${environment.URL_API}/user/all`);
   }
 
-  async getusersById(idUsuario: number) {
-    return await this.http.get<User>(`${this.URL_API}/user/byid/${idUsuario}`)
-      .toPromise<User>();
+  getusersById(idUsuario: number): Observable<User> {
+    return this.http.get<User>(`${environment.URL_API}/user/byid/${idUsuario}`);
   }
 
-  async updateUsers(user: User) {
-    return await this.http.put<User>(`${this.URL_API}/user/update`, user)
-      .toPromise<User>();
+  updateUsers(user: User): Observable<User> {
+    return this.http.put<User>(`${environment.URL_API}/user/update`, user);
   }
 
-  async deleteUsers(idUsuario: number) {
-    return await this.http.delete<User>(`${this.URL_API}/user/delete/${idUsuario}`)
-      .toPromise<User>();
+  deleteUsers(idUsuario: number): Observable<User> {
+    return this.http.delete<User>(`${environment.URL_API}/user/delete/${idUsuario}`);
   }
 
-  async userLogin(user: User) {
-    return await this.http.post<LoginResponse>(`${this.URL_API}/user/login`, user).toPromise<LoginResponse>();
+  userLogin(user: User): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${environment.URL_API}/user/login`, user);
   }
 }

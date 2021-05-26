@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Customer } from '../models/customer.model';
 import { CustomerService } from './customer.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InsuranceService {
-  //URL_API: string = 'http://35.225.234.94:8080/api';
 
   constructor(private customerService: CustomerService) { }
 
-  async getCustomersAll() {
-    return await this.customerService.getCustomersAll();
+  getCustomersAll(): Observable<Customer[]> {
+    return this.customerService.getCustomersAll();
   }
 }

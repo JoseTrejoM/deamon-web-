@@ -6,6 +6,7 @@ import { ConfirmationService } from 'primeng/api';
 import { MessageService } from 'primeng/api';
 
 import Swal from 'sweetalert2';
+import {formatDate} from '@angular/common';
 
 @Component({
   selector: 'app-customer',
@@ -16,47 +17,48 @@ import Swal from 'sweetalert2';
 export class CustomerComponent implements OnInit {
 
   customers: Customer[] = [];
-  customer: Customer = new Customer();
+  customer!: Customer;
   columNames: any[] = [];
 
   submitted: boolean = false;
   showDialog: boolean = false;
+  customerEmpty: Customer = {
+      idCliente: 0,
+      nombre: '',
+      curp: '',
+      fechanacimiento: '',
+      fechaNac: new Date(),
+      sexo: ''
+  }
 
   constructor(private customerService: CustomerService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
     this.columNames = [
-      { field: 'nombre', header: 'Nombre' },
-      { field: 'curp', header: 'CURP' },
-      { field: 'fechaNac', header: 'Fecha de nacimiento' },
-      { field: 'sexo', header: 'Sexo' }
+      { field: 'nombre', header: 'Nombre', class: '' },
+      { field: 'curp', header: 'CURP', class: '' },
+      { field: 'fechanacimiento', header: 'Fecha de nacimiento', class: 'p-d-none p-d-md-inline-flex' },
+      { field: 'sexo', header: 'Sexo', class: 'p-d-none p-d-md-inline-flex' }
     ];
 
     this.getCustomersAll();
   }
 
-  async getCustomersAll(){
-    await this.customerService.getCustomersAll().then((data: Customer[]) => {
+  getCustomersAll(){
+    this.customerService.getCustomersAll().subscribe((data: Customer[]) => {
       data.forEach((customer: Customer) => {
         customer.fechaNac = new Date(customer.fechaNac);
-        customer.fechanacimiento = this.parseDayOrMoth(customer.fechaNac.getDate()) + "/" + this.parseDayOrMoth(customer.fechaNac.getMonth() + 1) + "/" + customer.fechaNac.getFullYear();
+        customer.fechanacimiento = formatDate(customer.fechaNac, 'dd/MM/yyyy', 'en-US');
       });
 
       this.customers = data;
-    }).catch(err => {
+    },(err) => {
       console.log(err);
     });
   }
 
-  parseDayOrMoth (dayOrMoth: number) : string{
-    if(dayOrMoth < 10){
-      return '0' + dayOrMoth;
-    }
-    return '' + dayOrMoth;
-  }
-
   openNew() {
-    this.customer = new Customer();
+    this.customer = this.customerEmpty;
     this.customer.sexo = 'M';
     this.submitted = false;
     this.showDialog = true;
@@ -70,10 +72,8 @@ export class CustomerComponent implements OnInit {
   editCustomer(customer: Customer) {
     this.customer = { ...customer };
     this.customer.fechaNac = new Date(customer.fechaNac);
-    this.customer.fechanacimiento = this.customer.fechaNac.getDate() + '/' + (this.customer.fechaNac.getMonth() + 1) + '/' + this.customer.fechaNac.getFullYear(); 
+    this.customer.fechanacimiento = formatDate(customer.fechaNac, 'dd/MM/yyyy', 'en-US');
     this.showDialog = true;
-    console.log(customer);
-    console.log(this.customer);
   }
 
   deleteCustomer(customer: Customer) {
@@ -86,14 +86,15 @@ export class CustomerComponent implements OnInit {
       acceptButtonStyleClass: 'p-button-primary',
       rejectLabel: 'No',
       rejectButtonStyleClass: 'p-button-danger',
-      accept: async () => {
+      accept: () => {
         this.showLoading();
-        await this.customerService.deleteCustomers(customer.idCliente).then((data: Customer) => {
+        this.customerService.deleteCustomers(customer.idCliente).subscribe((data: Customer) => {
           this.customers = this.customers.filter((val: Customer) => val.idCliente !== customer.idCliente);
-          this.customer = new Customer();
+          this.customer = this.customerEmpty;
           this.messageService.add({ severity: 'success', summary: 'Successful', detail: data.nombre + ' cliente eliminado ', life: 3000 });
           Swal.close();
-        }).catch(err => {
+        },(err) => {
+          console.log(err);
           Swal.close();
         });
       }
@@ -117,27 +118,31 @@ export class CustomerComponent implements OnInit {
     }
   }
 
-  private async createCustomer(customer: Customer) {
+  private createCustomer(customer: Customer) {
     this.showLoading();
-    await this.customerService.createCustomers(customer).then((data: Customer) => {
+    this.customerService.createCustomers(customer).subscribe((data: Customer) => {
       this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Cliente creado', life: 3000 });
 
       this.customers.push(data);
       this.showDialog = false;
-      this.customer = new Customer();
+      this.customer = this.customerEmpty;
       Swal.close();
+    },(err) => {
+      console.log(err);
     });
   }
 
-  private async updateCustomer(customer: Customer) {
+  private updateCustomer(customer: Customer) {
     this.showLoading();
-    await this.customerService.updateCustomers(customer).then((data: Customer) => {
+    this.customerService.updateCustomers(customer).subscribe((data: Customer) => {
       this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Cliente actualizado', life: 3000 });
 
       this.customers[this.findIndexById(data.idCliente)] = data;
       this.showDialog = false;
-      this.customer = new Customer();
+      this.customer = this.customerEmpty;
       Swal.close();
+    },(err) => {
+      console.log(err);
     });
   }
 
