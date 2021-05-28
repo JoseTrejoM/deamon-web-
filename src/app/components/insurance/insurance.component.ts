@@ -4,18 +4,20 @@ import { Customer } from 'src/app/models/customer.model';
 import { InsuranceService } from 'src/app/services/insurance.service';
 
 import {formatDate} from '@angular/common';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-insurance',
   templateUrl: './insurance.component.html',
-  styleUrls: ['./insurance.component.css']
+  styleUrls: ['./insurance.component.css'],
+  providers: [MessageService]
 })
 export class InsuranceComponent implements OnInit {
 
 insurances: Insurance[] = [];
 columNames: any[] = [];
 
-  constructor(private insuranceService: InsuranceService) { }
+  constructor(private insuranceService: InsuranceService, private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.columNames = [
@@ -33,7 +35,7 @@ columNames: any[] = [];
     this.insuranceService.getCustomersAll().subscribe((data: Customer[])=>{
       let idx: number = 0;
       let today: Date = new Date();
-
+      data = data.sort((a, b) => (a.nombre.toUpperCase() > b.nombre.toUpperCase()) ? 1 : -1);
       let insurancesTemp: Insurance[] = [];
       data.forEach((customer: Customer) => {
         idx++;
@@ -48,13 +50,26 @@ columNames: any[] = [];
         }
         insurancesTemp.push(insurance);
       });
-      this.insurances = insurancesTemp.sort((a, b) => (a.cliente > b.cliente) ? 1 : -1);
+      this.insurances = insurancesTemp;
 
     },(err) => {
       console.log(err);
+      this.withError(err, 'Error consultar las polizas');
     });
+  }
 
+  private withError(err: any, msgError: string) {
+    let messageError = '';
+    if (err.status && err.status == 400) {
+      messageError = msgError;
+    } else {
+      messageError = 'Error inesperado intente mas tarde';
+    }
+    this.showMessage('error', 'Error', messageError);
+  }
 
+  private showMessage(severity: string, summary: string, detail: string) {
+    this.messageService.add({ severity: severity, summary: summary, detail: detail, life: 3000 });
   }
 
 }

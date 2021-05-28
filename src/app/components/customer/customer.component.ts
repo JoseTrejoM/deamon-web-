@@ -51,7 +51,7 @@ export class CustomerComponent implements OnInit {
         customer.fechanacimiento = formatDate(customer.fechaNac, 'dd/MM/yyyy', 'en-US');
       });
 
-      this.customers = data.sort((a, b) => (a.nombre > b.nombre) ? 1 : -1);
+      this.customers = data.sort((a, b) => (a.nombre.toUpperCase() > b.nombre.toUpperCase()) ? 1 : -1);
     },(err) => {
       console.log(err);
     });
@@ -75,7 +75,6 @@ export class CustomerComponent implements OnInit {
   }
 
   deleteCustomer(customer: Customer) {
-    //console.log(customer);
     this.confirmationService.confirm({
       message: '¿Esta seguro de eliminar a ' + customer.nombre + '?',
       header: 'Confirmación',
@@ -87,13 +86,12 @@ export class CustomerComponent implements OnInit {
       accept: () => {
         this.showLoading();
         this.customerService.deleteCustomers(customer.idCliente).subscribe((data: Customer) => {
-          this.customers = this.customers.filter((val: Customer) => val.idCliente !== customer.idCliente);
+          this.customers = this.customers.filter((val: Customer) => val.idCliente !== data.idCliente);
           this.customer = {...this.customerEmpty};
-          this.messageService.add({ severity: 'success', summary: 'Successful', detail: data.nombre + ' cliente eliminado ', life: 3000 });
-          Swal.close();
+          this.withSuccess('Cliente eliminado');
         },(err) => {
+          this.withError(err, 'Error al eliminar el cliente');
           console.log(err);
-          Swal.close();
         });
       }
     });
@@ -106,23 +104,21 @@ export class CustomerComponent implements OnInit {
     let intDate: string[] = this.customer.fechanacimiento.split('/');
     this.customer.fechaNac = new Date(Number(intDate[2]), Number(intDate[1]) - 1, Number(intDate[0]));
 
-    if (this.customer.nombre.trim()) {
       if (this.customer.idCliente && this.customer.idCliente > 0) {
         this.updateCustomer(this.customer);
       } else {
         this.createCustomer(this.customer);
       }
-    }
   }
 
   private createCustomer(customer: Customer) {
     this.showLoading();
     this.customerService.createCustomers(customer).subscribe((data: Customer) => {
-
       this.customers.push(data);
+      this.customers = this.customers.sort((a, b) => (a.nombre.toUpperCase() > b.nombre.toUpperCase()) ? 1 : -1);
       this.withSuccess('Cliente creado');
     },(err) => {
-      this.withError(err, 'Error al crear');
+      this.withError(err, 'Error al crear ' + customer.nombre);
       console.log(err);
     });
   }
@@ -130,11 +126,11 @@ export class CustomerComponent implements OnInit {
   private updateCustomer(customer: Customer) {
     this.showLoading();
     this.customerService.updateCustomers(customer).subscribe((data: Customer) => {
-
       this.customers[this.findIndexById(data.idCliente)] = data;
+      this.customers = this.customers.sort((a, b) => (a.nombre.toUpperCase() > b.nombre.toUpperCase()) ? 1 : -1);
       this.withSuccess('Cliente actualizado');
     },(err) => {
-      this.withError(err, 'Error al actualizar');
+      this.withError(err, 'Error al actualizar ' + customer.nombre);
       console.log(err);
     });
   }
@@ -151,22 +147,22 @@ export class CustomerComponent implements OnInit {
   }
 
   private withSuccess(message: string){
+    Swal.close();
     this.showDialog = false;
     this.customer ={...this.customerEmpty};
-    Swal.close();
-    this.showSuccess(message);
+    this.showMessage('success', 'Exito', message);
   }
 
-  private withError(err: any, msgError: string) {
+  private withError(err: any, message: string) {
     this.showDialog = false;
     Swal.close();
     let messageError = '';
     if (err.status && err.status == 400) {
-      messageError = msgError;
+      messageError = message;
     } else {
       messageError = 'Error inesperado intente mas tarde';
     }
-    this.showError(messageError);
+    this.showMessage('error', 'Error', messageError);
   }
 
   private showLoading() {
@@ -178,20 +174,8 @@ export class CustomerComponent implements OnInit {
     Swal.showLoading();
   }
 
-  private showSuccess(message: string) {
-    Swal.fire({
-      allowOutsideClick: false,
-      icon: 'success',
-      text: message
-    });
-  }
-
-  private showError(message: string) {
-    Swal.fire({
-      allowOutsideClick: false,
-      icon: 'error',
-      text: message
-    });
+  private showMessage(severity: string, summary: string, detail: string) {
+    this.messageService.add({ severity: severity, summary: summary, detail: detail, life: 3000 });
   }
 
 }

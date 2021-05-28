@@ -25,7 +25,7 @@ export class UserComponent implements OnInit {
 
   ngOnInit(): void {
     this.userService.getCustomersAll().subscribe((data:User[])=>{
-      this.users = data.sort((a, b) => (a.correo > b.correo) ? 1 : -1);
+      this.users = data.sort((a, b) => (a.correo.toUpperCase() > b.correo.toUpperCase()) ? 1 : -1);
     });
   }
 
@@ -57,12 +57,11 @@ export class UserComponent implements OnInit {
       accept: () => {
         this.showLoading();
         this.userService.deleteUsers(user.idUsuario).subscribe((data: User) => {
-          this.users = this.users.filter((val: User) => val.idUsuario !== user.idUsuario);
-          this.messageService.add({ severity: 'success', summary: 'Successful', detail: data.correo + ' usuario eliminado ', life: 3000 });
-          Swal.close();
+          this.users = this.users.filter((val: User) => val.idUsuario !== data.idUsuario);
+          this.withSuccess('Usuario eliminado');
         }, (err) => {
+          this.withError(err, 'Error al elimnar ' + user.correo);
           console.log(err);
-          Swal.close();
         });
       }
     });
@@ -85,9 +84,8 @@ export class UserComponent implements OnInit {
   private createUser(user: User) {
     this.showLoading();
     this.userService.createUsers(user).subscribe((data: User) => {
-      //this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Usuario creado', life: 3000 });
-
       this.users.push(data);
+      this.users = this.users.sort((a, b) => (a.correo.toUpperCase() > b.correo.toUpperCase()) ? 1 : -1);
       this.withSuccess(data.correo + ' creado');
     },(err) => {
       this.withError(err, 'El usuario ya existe');
@@ -98,9 +96,8 @@ export class UserComponent implements OnInit {
   private updateUser(user: User) {
     this.showLoading();
     this.userService.updateUsers(user).subscribe((data: User) => {
-      //this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Usuario actualizado', life: 3000 });
-
       this.users[this.findIndexById(data.idUsuario)] = data;
+      this.users = this.users.sort((a, b) => (a.correo.toUpperCase() > b.correo.toUpperCase()) ? 1 : -1);
       this.withSuccess(data.correo + ' actualizado');
     },(err) => {
       this.withError(err, 'Error al actualizar');
@@ -120,10 +117,10 @@ export class UserComponent implements OnInit {
   }
 
   private withSuccess(message: string){
+    Swal.close();
     this.showDialog = false;
     this.userNew = {...this.userEmpty};
-    Swal.close();
-    this.showSuccess(message);
+    this.showMessage('success', 'Exito', message);
   }
 
   private withError(err: any, msgError: string) {
@@ -135,7 +132,7 @@ export class UserComponent implements OnInit {
     } else {
       messageError = 'Error inesperado intente mas tarde';
     }
-    this.showError(messageError);
+    this.showMessage('error', 'Error', messageError);
   }
 
   private showLoading() {
@@ -147,20 +144,8 @@ export class UserComponent implements OnInit {
     Swal.showLoading();
   }
 
-  private showSuccess(message: string) {
-    Swal.fire({
-      allowOutsideClick: false,
-      icon: 'success',
-      text: message
-    });
-  }
-
-  private showError(message: string) {
-    Swal.fire({
-      allowOutsideClick: false,
-      icon: 'error',
-      text: message
-    });
+  private showMessage(severity: string, summary: string, detail: string) {
+    this.messageService.add({ severity: severity, summary: summary, detail: detail, life: 3000 });
   }
 
 }
