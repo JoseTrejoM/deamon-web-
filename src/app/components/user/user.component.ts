@@ -25,7 +25,7 @@ export class UserComponent implements OnInit {
 
   ngOnInit(): void {
     this.userService.getCustomersAll().subscribe((data:User[])=>{
-      this.users = data;
+      this.users = data.sort((a, b) => (a.correo > b.correo) ? 1 : -1);
     });
   }
 
@@ -108,13 +108,6 @@ export class UserComponent implements OnInit {
     });
   }
 
-  private withSuccess(message: string){
-    this.showDialog = false;
-    this.userNew = {...this.userEmpty};
-    Swal.close();
-    this.showSuccess(message);
-  }
-
   private findIndexById(idUsuario: number): number {
     let index = -1;
     for (let i = 0; i < this.users.length; i++) {
@@ -124,6 +117,13 @@ export class UserComponent implements OnInit {
       }
     }
     return index;
+  }
+
+  private withSuccess(message: string){
+    this.showDialog = false;
+    this.userNew = {...this.userEmpty};
+    Swal.close();
+    this.showSuccess(message);
   }
 
   private withError(err: any, msgError: string) {

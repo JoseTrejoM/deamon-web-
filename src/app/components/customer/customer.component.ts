@@ -51,7 +51,7 @@ export class CustomerComponent implements OnInit {
         customer.fechanacimiento = formatDate(customer.fechaNac, 'dd/MM/yyyy', 'en-US');
       });
 
-      this.customers = data;
+      this.customers = data.sort((a, b) => (a.nombre > b.nombre) ? 1 : -1);
     },(err) => {
       console.log(err);
     });
@@ -118,13 +118,11 @@ export class CustomerComponent implements OnInit {
   private createCustomer(customer: Customer) {
     this.showLoading();
     this.customerService.createCustomers(customer).subscribe((data: Customer) => {
-      this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Cliente creado', life: 3000 });
 
       this.customers.push(data);
-      this.showDialog = false;
-      this.customer = {...this.customerEmpty};
-      Swal.close();
+      this.withSuccess('Cliente creado');
     },(err) => {
+      this.withError(err, 'Error al crear');
       console.log(err);
     });
   }
@@ -132,13 +130,11 @@ export class CustomerComponent implements OnInit {
   private updateCustomer(customer: Customer) {
     this.showLoading();
     this.customerService.updateCustomers(customer).subscribe((data: Customer) => {
-      this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Cliente actualizado', life: 3000 });
 
       this.customers[this.findIndexById(data.idCliente)] = data;
-      this.showDialog = false;
-      this.customer ={...this.customerEmpty};
-      Swal.close();
+      this.withSuccess('Cliente actualizado');
     },(err) => {
+      this.withError(err, 'Error al actualizar');
       console.log(err);
     });
   }
@@ -154,13 +150,48 @@ export class CustomerComponent implements OnInit {
     return index;
   }
 
-  private showLoading(){
+  private withSuccess(message: string){
+    this.showDialog = false;
+    this.customer ={...this.customerEmpty};
+    Swal.close();
+    this.showSuccess(message);
+  }
+
+  private withError(err: any, msgError: string) {
+    this.showDialog = false;
+    Swal.close();
+    let messageError = '';
+    if (err.status && err.status == 400) {
+      messageError = msgError;
+    } else {
+      messageError = 'Error inesperado intente mas tarde';
+    }
+    this.showError(messageError);
+  }
+
+  private showLoading() {
     Swal.fire({
       allowOutsideClick: false,
       icon: 'info',
       text: 'Espere por favor...'
     });
     Swal.showLoading();
+  }
+
+  private showSuccess(message: string) {
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'success',
+      text: message
+    });
+  }
+
+  private showError(message: string) {
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'error',
+      text: message
+    });
   }
 
 }

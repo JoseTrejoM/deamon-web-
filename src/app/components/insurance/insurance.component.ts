@@ -48,7 +48,7 @@ columNames: any[] = [];
         }
         insurancesTemp.push(insurance);
       });
-      this.insurances = insurancesTemp;
+      this.insurances = insurancesTemp.sort((a, b) => (a.cliente > b.cliente) ? 1 : -1);
 
     },(err) => {
       console.log(err);
