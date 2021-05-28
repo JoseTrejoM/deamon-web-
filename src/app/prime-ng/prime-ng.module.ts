@@ -19,7 +19,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { MenubarModule } from 'primeng/menubar';
 import { InputMaskModule } from 'primeng/inputmask';
-
+import { ContextMenuModule } from 'primeng/contextmenu';
 
 @NgModule({
   declarations: [],
@@ -43,7 +43,8 @@ import { InputMaskModule } from 'primeng/inputmask';
     ProgressSpinnerModule,
     RadioButtonModule,
     MenubarModule,
-    InputMaskModule
+    InputMaskModule,
+    ContextMenuModule
   ]
 })
 export class PrimeNgModule { }

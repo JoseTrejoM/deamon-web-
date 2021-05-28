@@ -14,25 +14,17 @@ export class InsuranceComponent implements OnInit {
 
 insurances: Insurance[] = [];
 columNames: any[] = [];
-insuranceEmpty: Insurance =  {
-  cliente: '',
-  poliza: '',
-  noAutorizacion: '',
-  fecha: '',
-  formaPago: '',
-  periodoPago: ''
-}
 
   constructor(private insuranceService: InsuranceService) { }
 
   ngOnInit(): void {
     this.columNames = [
-      { field: 'cliente', header: 'Cliente', class: '' },
-      { field: 'poliza', header: 'Poliza', class: '' },
-      { field: 'noAutorizacion', header: 'No. autorizacion', class: 'p-d-none p-d-md-inline-flex' },
-      { field: 'fecha', header: 'Fecha', class: 'p-d-none p-d-md-inline-flex' },
-      { field: 'formaPago', header: 'Forma de pago', class: 'p-d-none p-d-md-inline-flex' },
-      { field: 'periodoPago', header: 'Periodo de pago', class: 'p-d-none p-d-md-inline-flex' }
+      { field: 'cliente', header: 'Cliente', class: '', classParent: '' },
+      { field: 'poliza', header: 'Poliza', class: '', classParent: '' },
+      { field: 'noAutorizacion', header: 'No. autorizacion', class: 'p-d-none p-d-md-inline-flex', classParent: 'resizeColDown' },
+      { field: 'fecha', header: 'Fecha', class: 'p-d-none p-d-md-inline-flex', classParent: 'resizeColDown' },
+      { field: 'formaPago', header: 'Forma de pago', class: 'p-d-none p-d-md-inline-flex', classParent: 'resizeColDown' },
+      { field: 'periodoPago', header: 'Periodo de pago', class: 'p-d-none p-d-md-inline-flex', classParent: 'resizeColDown' }
     ];
     this.getCustomersAll();
   }
@@ -46,14 +38,15 @@ insuranceEmpty: Insurance =  {
       data.forEach((customer: Customer) => {
         idx++;
         let rand: number = Math.floor(Math.random() * 10) + 1;
-        let auth: Insurance = this.insuranceEmpty;
-        auth.cliente = customer.nombre;
-        auth.poliza = 'POL' + today.getFullYear() + '0000' + idx;
-        auth.fecha = formatDate(today, 'dd/MM/yyyy', 'en-US');
-        auth.formaPago = ((rand % 2) == 0) ? 'Efectivo' : 'TDC';
-        auth.noAutorizacion = idx.toString();
-        auth.periodoPago = ((rand % 2) == 0) ? 'Trimestral' : 'Mensual';
-        insurancesTemp.push(auth);
+        let insurance: Insurance =  {
+          cliente: customer.nombre,
+          poliza: 'POL' + today.getFullYear() + '0000' + idx,
+          noAutorizacion: idx.toString(),
+          fecha: formatDate(today, 'dd/MM/yyyy', 'en-US'),
+          formaPago: ((rand % 2) == 0) ? 'Efectivo' : 'TDC',
+          periodoPago: ((rand % 2) == 0) ? 'Trimestral' : 'Mensual'
+        }
+        insurancesTemp.push(insurance);
       });
       this.insurances = insurancesTemp;
 

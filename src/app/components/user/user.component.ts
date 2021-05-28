@@ -18,9 +18,8 @@ export class UserComponent implements OnInit {
 
   users: User[] = [];
   userNew!: User;
-  submitted: boolean = false;
   showDialog: boolean = false;
-  userEmpty: User = {idUsuario: 0, correo: '', contrasenia: '', tipo: ''};
+  userEmpty: User = {idUsuario: 0, correo: '', contrasenia: '', tipo: 'admin'};
 
   constructor(private userService: UserService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
@@ -32,13 +31,12 @@ export class UserComponent implements OnInit {
 
   openNew(form: NgForm) {
     form.resetForm();
-    this.userNew = this.userEmpty;
+    this.userNew = {...this.userEmpty};
     this.showDialog = true;
   }
 
   hideDialog() {
     this.showDialog = false;
-    this.submitted = false;
   }
 
   editUser(user: User) {
@@ -71,11 +69,10 @@ export class UserComponent implements OnInit {
   }
 
   saveOrUpdateUser() {
-    if(!this.userNew.correo || !this.userNew.contrasenia || !this.userNew.tipo){
+    if(!this.userNew.correo || !this.userNew.contrasenia){
       return;
     }
 
-    this.submitted = true;
     if (this.userNew.correo.trim()) {
       if (this.userNew.idUsuario && this.userNew.idUsuario > 0) {
         this.updateUser(this.userNew);
@@ -88,13 +85,12 @@ export class UserComponent implements OnInit {
   private createUser(user: User) {
     this.showLoading();
     this.userService.createUsers(user).subscribe((data: User) => {
-      this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Usuario creado', life: 3000 });
+      //this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Usuario creado', life: 3000 });
 
       this.users.push(data);
-      this.showDialog = false;
-      this.userNew = this.userEmpty;
-      Swal.close();
+      this.withSuccess(data.correo + ' creado');
     },(err) => {
+      this.withError(err, 'El usuario ya existe');
       console.log(err);
     });
   }
@@ -102,15 +98,21 @@ export class UserComponent implements OnInit {
   private updateUser(user: User) {
     this.showLoading();
     this.userService.updateUsers(user).subscribe((data: User) => {
-      this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Usuario actualizado', life: 3000 });
+      //this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Usuario actualizado', life: 3000 });
 
       this.users[this.findIndexById(data.idUsuario)] = data;
-      this.showDialog = false;
-      this.userNew = this.userEmpty;
-      Swal.close();
+      this.withSuccess(data.correo + ' actualizado');
     },(err) => {
+      this.withError(err, 'Error al actualizar');
       console.log(err);
     });
+  }
+
+  private withSuccess(message: string){
+    this.showDialog = false;
+    this.userNew = {...this.userEmpty};
+    Swal.close();
+    this.showSuccess(message);
   }
 
   private findIndexById(idUsuario: number): number {
@@ -124,13 +126,41 @@ export class UserComponent implements OnInit {
     return index;
   }
 
-  private showLoading(){
+  private withError(err: any, msgError: string) {
+    this.showDialog = false;
+    Swal.close();
+    let messageError = '';
+    if (err.status && err.status == 400) {
+      messageError = msgError;
+    } else {
+      messageError = 'Error inesperado intente mas tarde';
+    }
+    this.showError(messageError);
+  }
+
+  private showLoading() {
     Swal.fire({
       allowOutsideClick: false,
       icon: 'info',
       text: 'Espere por favor...'
     });
     Swal.showLoading();
+  }
+
+  private showSuccess(message: string) {
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'success',
+      text: message
+    });
+  }
+
+  private showError(message: string) {
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'error',
+      text: message
+    });
   }
 
 }

@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 
 import Swal from 'sweetalert2';
 import {formatDate} from '@angular/common';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-customer',
@@ -20,7 +21,6 @@ export class CustomerComponent implements OnInit {
   customer!: Customer;
   columNames: any[] = [];
 
-  submitted: boolean = false;
   showDialog: boolean = false;
   customerEmpty: Customer = {
       idCliente: 0,
@@ -28,17 +28,17 @@ export class CustomerComponent implements OnInit {
       curp: '',
       fechanacimiento: '',
       fechaNac: new Date(),
-      sexo: ''
+      sexo: 'M'
   }
 
   constructor(private customerService: CustomerService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
     this.columNames = [
-      { field: 'nombre', header: 'Nombre', class: '' },
-      { field: 'curp', header: 'CURP', class: '' },
-      { field: 'fechanacimiento', header: 'Fecha de nacimiento', class: 'p-d-none p-d-md-inline-flex' },
-      { field: 'sexo', header: 'Sexo', class: 'p-d-none p-d-md-inline-flex' }
+      { field: 'nombre', header: 'Nombre', class: '', classParent: '' },
+      { field: 'curp', header: 'CURP', class: '', classParent: 'resizeColDown' },
+      { field: 'fechanacimiento', header: 'Fecha de nacimiento', class: 'p-d-none p-d-md-inline-flex', classParent: 'resizeColDown' },
+      { field: 'sexo', header: 'Sexo', class: 'p-d-none p-d-md-inline-flex', classParent: 'resizeColDown' }
     ];
 
     this.getCustomersAll();
@@ -57,16 +57,14 @@ export class CustomerComponent implements OnInit {
     });
   }
 
-  openNew() {
-    this.customer = this.customerEmpty;
-    this.customer.sexo = 'M';
-    this.submitted = false;
+  openNew(form: NgForm) {
+    form.resetForm();
+    this.customer = {...this.customerEmpty};
     this.showDialog = true;
   }
 
   hideDialog() {
     this.showDialog = false;
-    this.submitted = false;
   }
 
   editCustomer(customer: Customer) {
@@ -90,7 +88,7 @@ export class CustomerComponent implements OnInit {
         this.showLoading();
         this.customerService.deleteCustomers(customer.idCliente).subscribe((data: Customer) => {
           this.customers = this.customers.filter((val: Customer) => val.idCliente !== customer.idCliente);
-          this.customer = this.customerEmpty;
+          this.customer = {...this.customerEmpty};
           this.messageService.add({ severity: 'success', summary: 'Successful', detail: data.nombre + ' cliente eliminado ', life: 3000 });
           Swal.close();
         },(err) => {
@@ -108,7 +106,6 @@ export class CustomerComponent implements OnInit {
     let intDate: string[] = this.customer.fechanacimiento.split('/');
     this.customer.fechaNac = new Date(Number(intDate[2]), Number(intDate[1]) - 1, Number(intDate[0]));
 
-    this.submitted = true;
     if (this.customer.nombre.trim()) {
       if (this.customer.idCliente && this.customer.idCliente > 0) {
         this.updateCustomer(this.customer);
@@ -125,7 +122,7 @@ export class CustomerComponent implements OnInit {
 
       this.customers.push(data);
       this.showDialog = false;
-      this.customer = this.customerEmpty;
+      this.customer = {...this.customerEmpty};
       Swal.close();
     },(err) => {
       console.log(err);
@@ -139,7 +136,7 @@ export class CustomerComponent implements OnInit {
 
       this.customers[this.findIndexById(data.idCliente)] = data;
       this.showDialog = false;
-      this.customer = this.customerEmpty;
+      this.customer ={...this.customerEmpty};
       Swal.close();
     },(err) => {
       console.log(err);

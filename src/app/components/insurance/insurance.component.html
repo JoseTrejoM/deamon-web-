@@ -14,7 +14,7 @@
 
   <ng-template pTemplate="header" let-columns>
         <tr>
-            <th *ngFor="let col of columns" >
+            <th *ngFor="let col of columns" [class]="col.classParent">
                 <div [class]="col.class">
                   {{col.header}}
                 </div>

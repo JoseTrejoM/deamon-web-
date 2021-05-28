@@ -1,4 +1,4 @@
-<div class="p-grid p-jc-center p-mt-4" >
+<div class="p-grid p-jc-center p-mt-6" >
 
   <form (ngSubmit)="loginIn( f )" #f="ngForm">
     <p-card class="p-grid p-ai-center vertical-container" [style]="{width: '400px'}">
@@ -45,9 +45,6 @@
 
       <ng-template pTemplate="footer">
         <div class="p-grid p-justify-center p-align-center">
-
-          <button pButton pRipple type="button" label="Registrar" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink p-shadow-24" (click)="openNew(fn)" ></button>
-          <span>&nbsp;&nbsp;&nbsp;</span>
           <p-button type="submit" label="Continuar" styleClass="p-button-info p-shadow-24" ></p-button>
 
         </div>
@@ -58,31 +55,8 @@
 
 </div>
 
-<form #fn="ngForm">
-<p-dialog [(visible)]="showDialog" [style]="{width: '400px'}" header="Registro" [modal]="true" styleClass="p-fluid" [baseZIndex]="10000" >
-
-  <!--ng-template pTemplate="content"-->
-
-    <div class="p-grid p-justify-center p-align-center">
-
-      <div class="p-mt-4">
-        <input name="email" type="text" pInputText [(ngModel)]="userNew.correo" required email placeholder="Email">
-        <p-message severity="error" *ngIf="fn.submitted && !userNew.correo" text="Requerido"></p-message>
-      </div>
-
-      <div class="p-mt-4">
-        <p-password name="password" [(ngModel)]="userNew.contrasenia" [feedback]="false" required placeholder="Password"></p-password>
-        <p-message severity="error" *ngIf="fn.submitted && !userNew.contrasenia" text="Requerido"></p-message>
-      </div>
-
-    </div>
-
-  <!--/ng-template-->
-
-  <ng-template pTemplate="footer">
-    <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveUser()"></button>
-    <button pButton pRipple label="Cancelar" icon="pi pi-times" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink" (click)="showDialog = false"></button>
-  </ng-template>
-
-</p-dialog>
-</form>
+<div class="p-d-block p-d-sm-none is-0">xs</div>
+<div class="p-d-none p-d-sm-block p-d-md-none is-1">sm</div>
+<div class="p-d-none p-d-md-block p-d-lg-none is-2">md</div>
+<div class="p-d-none p-d-lg-block p-d-xl-none is-3">lg</div>
+<div class="p-d-none p-d-xl-block is-4">xl</div>

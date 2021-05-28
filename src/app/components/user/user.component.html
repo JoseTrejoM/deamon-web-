@@ -5,7 +5,8 @@
   <ng-template pTemplate="caption">
     <div class="p-d-flex p-ai-center p-jc-between">
       <p class="p-d-none p-d-md-inline-flex">Usuarios</p>
-
+      <p-button type="button" icon="pi pi-plus" styleClass="p-button-rounded p-button-success p-shadow-24 p-d-md-none p-mr-2" (click)="openNew(fn)"></p-button>
+      <p-button type="button" label="Nuevo" icon="pi pi-plus" styleClass="p-button-rounded p-button-success p-shadow-24 p-d-none p-d-md-inline-flex" (click)="openNew(fn)"></p-button>
       <span class="p-input-icon-left">
         <i class="pi pi-search"></i>
         <input pInputText type="text" (input)="dtu.filterGlobal($event.target.value, 'contains')" placeholder="Buscar usuario..." />
@@ -32,8 +33,8 @@
           {{user.tipo}}
         </div>
       </td>
-      <td>
-        <button pButton pRipple icon="pi pi-pencil" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink p-button-rounded p-button-success p-shadow-24 p-mr-2" (click)="editUser(user)"></button>
+      <td class="aliginCommandButton">
+        <button pButton pRipple icon="pi pi-pencil" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-rounded p-shadow-24" (click)="editUser(user)"></button>
         <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning p-shadow-24" (click)="deleteUser(user)"></button>
       </td>
     </tr>
@@ -41,29 +42,24 @@
 </p-table>
 
 <form #fn="ngForm">
-  <p-dialog [(visible)]="showDialog" [style]="{width: '400px'}" header="Registro" [modal]="true" styleClass="p-fluid" [baseZIndex]="10000">
+  <p-dialog [(visible)]="showDialog" [style]="{width: '75vw'}" header="Registro" [modal]="true" styleClass="p-fluid" [baseZIndex]="10000">
 
     <ng-template pTemplate="content">
 
-      <div class="p-grid p-justify-center p-align-center">
+      <!--div class="p-grid p-jc-center"-->
 
-        <div class="p-mt-4">
-          <input name="email" type="text" pInputText [(ngModel)]="userNew.correo" required email placeholder="Email">
-          <p-message severity="error" *ngIf="fn.submitted && !userNew.correo" text="Requerido"></p-message>
+        <div class="p-field">
+          <input #email name="email" type="text" pInputText [(ngModel)]="userNew.correo" required email placeholder="Email">
+          <p-message severity="error" *ngIf="fn.submitted && !userNew.correo"></p-message>
         </div>
 
-        <div class="p-mt-4">
-          <p-password name="password" [(ngModel)]="userNew.contrasenia" [feedback]="false" required placeholder="Password"></p-password>
-          <p-message severity="error" *ngIf="fn.submitted && !userNew.contrasenia" text="Requerido"></p-message>
+        <div class="p-field">
+          <p-password #password name="password" [(ngModel)]="userNew.contrasenia" [feedback]="false" required placeholder="Password"></p-password>
+          <p-message severity="error" *ngIf="fn.submitted && !userNew.contrasenia"></p-message>
         </div>
 
-      </div>
-
+      <!--/div-->
     </ng-template>
-
-    <!--div class="p-mt-4">
-    <p-message severity="error" *ngIf="fn.submitted && isNewUserInvalid" text="{{messageInvalid}}"></p-message>
-  </div-->
 
     <ng-template pTemplate="footer">
       <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveOrUpdateUser()"></button>
