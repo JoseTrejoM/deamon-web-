@@ -1,8 +1,3 @@
-@font-face {
-  font-family: 'dancing_script';
-  src: url('/assets/fonts/Dancing_Script/DancingScript-VariableFont_wght.ttf') format('opentype');
-}
-
 .p-card-subtitleee{
   display: flex;
   justify-content: center;

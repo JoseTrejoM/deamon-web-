@@ -36,7 +36,6 @@
   padding: 0.857em 0.857em 0 0.857em !important;
 }*/
 
-/*
 :host ::ng-deep {
     .p-datatable-responsive-demo .p-datatable-tbody > tr > td .p-column-title {
         display: none;
@@ -46,7 +45,7 @@
 @media screen and (max-width: 40rem) {
     :host ::ng-deep {
         .p-datatable {
-            &.p-datatable-responsive-demo {
+            & .p-datatable-responsive-demo {
                 .p-datatable-thead > tr > th,
                 .p-datatable-tfoot > tr > td {
                     display: none !important;
@@ -75,5 +74,15 @@
             }
         }
     }
+
+    .hideCol{
+      display: none;
+    }
+
+    .resizeColUp{
+      min-width: 30%;
+    }
+    .resizeColDown{
+      width: 1%;
+    }    
 }
-*/

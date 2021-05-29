@@ -1,44 +1,41 @@
-<div class="card" style="display: flex; justify-content: center;">
+<p-toast></p-toast>
+<div class="p-grid p-jc-center p-mt-6" >
 
   <form (ngSubmit)="loginIn( f )" #f="ngForm">
-    <p-card [style]="{width: '400px'}">
+    <p-card class="p-grid p-ai-center vertical-container" [style]="{width: '400px'}">
       <ng-template pTemplate="header">
-        <div style="display: flex; justify-content: center;">
-          <img [src]="'assets/images/logoC_rosa.png'" [style]="{'width': '90%', 'display':'block'}">
+        <div class="p-grid p-jc-center">
+          <img [src]="'assets/images/logoC_rosa.png'" [style]="{'width': '70%', 'display':'block'}">
         </div>
 
-        <div [style]="{color:'#ff0391', 'font-family': 'dancing_script'}" class="p-grid p-justify-center p-align-center">
+        <div [style]="{color:'#ff0391', 'font-family': 'dancing_script'}" class="p-grid p-jc-center">
           <br>
           Tranquilidad A Tu Alcance
         </div>
       </ng-template>
 
       <ng-template pTemplate="title">
-        <div [style]="{color:'#ffa31a'}" class="p-grid p-justify-center p-align-center">
+        <div [style]="{color:'#ffa31a'}" class="p-grid p-jc-center">
           ¡Bienvenido!
         </div>
       </ng-template>
 
       <ng-template pTemplate="subtitle" id="sublogin" class="p-card-subtitleee">
-        <div style="display: flex; justify-content: center;">
+        <div class="p-grid p-jc-center">
           <div [style]="{color:'gray', 'text-align':'center', 'font-size': '0.8em !important', 'width': '80%'}">El más confiable plan de repatriación y servicios funerarios. Empecemos</div>
         </div>
       </ng-template>
 
-      <div class="p-grid p-justify-center p-align-center">
+      <div class="p-grid p-jc-center">
 
         <div class="p-mt-4">
-          <input name="email" type="text" pInputText [(ngModel)]="user.correo" [ngModelOptions]="{standalone: true}" required email placeholder="Email">
+          <input name="email" #email type="text" pInputText [(ngModel)]="user.correo" required email placeholder="Email" style="width:230px">
           <p-message severity="error" *ngIf="f.submitted && !user.correo"></p-message>
         </div>
 
         <div class="p-mt-4">
-          <p-password name="password" [(ngModel)]="user.contrasenia" [feedback]="false" [ngModelOptions]="{standalone: true}" required placeholder="Password"></p-password>
+          <p-password name="password" #password [(ngModel)]="user.contrasenia" [feedback]="false" [toggleMask]="true" required placeholder="Password"></p-password>
           <p-message severity="error" *ngIf="f.submitted && !user.contrasenia"></p-message>
-        </div>
-
-        <div class="p-mt-4">
-          <p-message severity="error" *ngIf="f.submitted && isInvalid" text="{{messageInvalid}}"></p-message>
         </div>
 
       </div>
@@ -49,10 +46,7 @@
 
       <ng-template pTemplate="footer">
         <div class="p-grid p-justify-center p-align-center">
-
-          <p-button type="submit" class="p-button-info" label="Continuar" styleClass="p-button-info" ></p-button>
-          <span>&nbsp;&nbsp;&nbsp;</span>
-          <button pButton pRipple type="button" label="Registrar" class="p-button-danger" (click)="openNew(fn)" ></button>
+          <p-button type="submit" label="Continuar" styleClass="p-button-info p-shadow-24" ></p-button>
 
         </div>
       </ng-template>
@@ -61,36 +55,3 @@
   </form>
 
 </div>
-
-<form #fn="ngForm">
-<p-dialog [(visible)]="userDialog" [style]="{width: '450px'}" header="Registro" [modal]="true" styleClass="p-fluid" [baseZIndex]="10000" >
-
-  <ng-template pTemplate="content">
-
-    <div class="p-grid p-justify-center p-align-center">
-
-      <div class="p-mt-4">
-        <input name="email" type="text" pInputText [(ngModel)]="userNew.correo" [ngModelOptions]="{standalone: true}" required email placeholder="Email">
-        <p-message severity="error" *ngIf="fn.submitted && !userNew.correo"></p-message>
-      </div>
-
-      <div class="p-mt-4">
-        <p-password name="password" [(ngModel)]="userNew.contrasenia" [feedback]="false" [ngModelOptions]="{standalone: true}" required placeholder="Password"></p-password>
-        <p-message severity="error" *ngIf="fn.submitted && !userNew.contrasenia"></p-message>
-      </div>
-
-    </div>
-
-  </ng-template>
-
-  <div class="p-mt-4">
-    <p-message severity="error" *ngIf="fn.submitted && isNewUserInvalid" text="{{messageInvalid}}"></p-message>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="userDialog = false"></button>
-    <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="saveUser()"></button>
-  </ng-template>
-
-</p-dialog>
-</form>

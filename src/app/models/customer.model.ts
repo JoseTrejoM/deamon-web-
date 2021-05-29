@@ -1,8 +1,8 @@
-export class Customer {
-    idCliente: number = 0;
-    nombre: string = '';
-    curp: string = '';
-    fechanacimiento: string  = '';
-    fechaNac: Date = new Date();
-    sexo: string = '';
+export interface Customer {
+    idCliente: number;
+    nombre: string;
+    curp: string;
+    fechanacimiento: string;
+    fechaNac: Date;
+    sexo: string;
 }

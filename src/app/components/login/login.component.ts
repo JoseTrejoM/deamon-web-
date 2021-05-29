@@ -1,95 +1,68 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LoginResponse } from 'src/app/models/loginresponse.model';
-import { UserModel } from 'src/app/models/user.model';
+import { MessageService } from 'primeng/api';
+import { User } from 'src/app/models/user.model';
 import { LoginService } from 'src/app/services/login.service';
 
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  providers: [MessageService]
 })
 export class LoginComponent implements OnInit {
 
-  user: UserModel = new UserModel();
-  isInvalid: boolean = false;
-  messageInvalid: string = '';
+  user!: User;
 
-  userNew: UserModel = new UserModel();
-  userDialog: boolean = false;
-  isNewUserInvalid: boolean = false;
-
-  constructor(private router: Router, private loginService: LoginService) { }
+  constructor(private router: Router, private loginService: LoginService, private messageService: MessageService) { }
 
   ngOnInit(): void {
+    this.user = { idUsuario: 0, correo: '', contrasenia: '', tipo: '' };
   }
 
   loginIn(form: NgForm) {
-    if (!this.user.correo || !this.user.contrasenia) {
-      console.log(form.submitted);
+    if (form.invalid) {
       return;
     }
 
     this.showLoading();
-    this.loginService.getValidateLogin(this.user).then((data: LoginResponse) => {
-      Swal.close();
-      this.router.navigate(['home']);
-    }).catch(err => {
-      //console.log(err);
-      setTimeout(()=>{
-
-
-      this.isInvalid = true;
-      if (err.status && err.status == 400) {
-        this.messageInvalid = 'Usuario o contraseña no validos';
-      } else {
-        this.messageInvalid = 'Error inesperado';
-      }
-      Swal.close();
-    }, 3000);
-
-    });
+    this.loginService.getValidateLogin(this.user).subscribe(
+      (data) => {
+        Swal.close();
+        this.router.navigateByUrl('/main');
+      }, (err) => {
+        console.log(err);
+        //setTimeout(()=>{
+        this.withError(err, 'Usuario o contraseña no validos');
+        //}, 3000);
+      });
   }
 
-  openNew(form: NgForm) {
-    form.resetForm();
-    this.userNew = new UserModel();
-    this.userDialog = true;
-  }
-
-  saveUser() {
-    if (!this.userNew.correo || !this.userNew.contrasenia) {
-      return;
+  private withError(err: any, msgError: string) {
+    Swal.close();
+    let messageError = '';
+    if (err.status && err.status == 400) {
+      messageError = msgError;
+    } else {
+      messageError = 'Error inesperado intente mas tarde';
     }
-    this.userNew.tipo = 'admin';
-
-    this.showLoading();
-    this.loginService.createUser(this.userNew).then((data:UserModel)=>{
-      this.userDialog = false;
-      Swal.close();
-    }).catch(err => {
-      console.log(err);
-      this.isNewUserInvalid = true;
-      //this.showLoading = false;
-      if (err.status && err.status == 400) {
-        this.messageInvalid = 'El usuario ya existe';
-      } else {
-        this.messageInvalid = 'Error inesperado';
-      }
-      Swal.close();
-    });
+    this.showMessage('error', 'Error', messageError);
   }
 
-  private showLoading(){
+  private showLoading() {
     Swal.fire({
       allowOutsideClick: false,
       icon: 'info',
       text: 'Espere por favor...'
     });
     Swal.showLoading();
+  }
+
+  private showMessage(severity: string, summary: string, detail: string) {
+    this.messageService.add({ severity: severity, summary: summary, detail: detail, life: 3000 });
   }
 
 }

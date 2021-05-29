@@ -6,7 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  showLogo: boolean = false;
+
   constructor() { }
+
   ngOnInit(): void {
+    this.showLogo = true;
   }
 }
