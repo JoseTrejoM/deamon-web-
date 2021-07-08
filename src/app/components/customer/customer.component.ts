@@ -2,12 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { Customer } from 'src/app/models/customer.model';
 import { CustomerService } from 'src/app/services/customer.service';
 
-import { ConfirmationService } from 'primeng/api';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 import Swal from 'sweetalert2';
 import {formatDate} from '@angular/common';
 import { NgForm } from '@angular/forms';
+import { AuthService } from 'src/app/services/auth.service';
+import { Permission } from 'src/app/models/permission.model';
+import { ActivatedRoute } from '@angular/router';
+import { CryptoService } from 'src/app/services/crypto.service';
 
 @Component({
   selector: 'app-customer',
@@ -31,7 +34,12 @@ export class CustomerComponent implements OnInit {
       sexo: 'M'
   }
 
-  constructor(private customerService: CustomerService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
+  canCreate: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+
+  constructor(private customerService: CustomerService, private messageService: MessageService, private confirmationService: ConfirmationService,
+    private authService: AuthService, private activatedRoute: ActivatedRoute, private cryptoService: CryptoService) { }
 
   ngOnInit(): void {
     this.columNames = [
@@ -41,7 +49,31 @@ export class CustomerComponent implements OnInit {
       { field: 'sexo', header: 'Sexo', class: 'p-d-none p-d-md-inline-flex', classParent: 'resizeColDown' }
     ];
 
+    const mod = this.activatedRoute.routeConfig?.path;
+    const listPermissions = this.authService.existPermission(mod ? mod : '');
+    if(listPermissions){
+      this.getPermissions(listPermissions);
+    } else {
+      const currentModule = this.authService.existModule(mod ? mod : '');
+      const sisModId = currentModule?.sisModId ? currentModule?.sisModId : 0;
+      const currentUser = this.authService.currentUser();
+
+      this.authService.getPermission(sisModId, currentUser).subscribe((data: Permission[])=>{
+        const cryptPermissions = this.cryptoService.encrypt(JSON.stringify(data));
+        localStorage.setItem(mod+'Pers', cryptPermissions);
+        this.getPermissions(data);
+      },(err)=>{
+        console.log(err);
+      });
+    }
+
     this.getCustomersAll();
+  }
+
+  getPermissions(data: Permission[]){
+    this.canCreate = data.find(element => element.permisoId === 1) ? true : false;
+    this.canUpdate = data.find(element => element.permisoId === 2) ? true : false;
+    this.canDelete = data.find(element => element.permisoId === 3) ? true : false;
   }
 
   getCustomersAll(){
@@ -50,8 +82,8 @@ export class CustomerComponent implements OnInit {
         customer.fechaNac = new Date(customer.fechaNac);
         customer.fechanacimiento = formatDate(customer.fechaNac, 'dd/MM/yyyy', 'en-US');
       });
+      this.customers = data;
 
-      this.customers = data.sort((a, b) => (a.nombre.toUpperCase() > b.nombre.toUpperCase()) ? 1 : -1);
     },(err) => {
       console.log(err);
     });
@@ -115,7 +147,7 @@ export class CustomerComponent implements OnInit {
     this.showLoading();
     this.customerService.createCustomers(customer).subscribe((data: Customer) => {
       this.customers.push(data);
-      this.customers = this.customers.sort((a, b) => (a.nombre.toUpperCase() > b.nombre.toUpperCase()) ? 1 : -1);
+      this.customers.sort((a, b) => (a.nombre.toUpperCase() > b.nombre.toUpperCase()) ? 1 : -1);
       this.withSuccess('Cliente creado');
     },(err) => {
       this.withError(err, 'Error al crear ' + customer.nombre);
@@ -127,7 +159,7 @@ export class CustomerComponent implements OnInit {
     this.showLoading();
     this.customerService.updateCustomers(customer).subscribe((data: Customer) => {
       this.customers[this.findIndexById(data.idCliente)] = data;
-      this.customers = this.customers.sort((a, b) => (a.nombre.toUpperCase() > b.nombre.toUpperCase()) ? 1 : -1);
+      this.customers.sort((a, b) => (a.nombre.toUpperCase() > b.nombre.toUpperCase()) ? 1 : -1);
       this.withSuccess('Cliente actualizado');
     },(err) => {
       this.withError(err, 'Error al actualizar ' + customer.nombre);

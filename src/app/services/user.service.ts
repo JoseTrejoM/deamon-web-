@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user.model';
-import { LoginResponse } from '../models/loginresponse.model';
 import { environment } from './../../environments/environment';
 import { Observable } from 'rxjs';
 
@@ -29,9 +28,5 @@ export class UserService {
 
   deleteUsers(idUsuario: number): Observable<User> {
     return this.http.delete<User>(`${environment.URL_API}/user/delete/${idUsuario}`);
-  }
-
-  userLogin(user: User): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.URL_API}/user/login`, user);
   }
 }

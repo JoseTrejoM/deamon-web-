@@ -1,36 +1,40 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { Router, CanActivate, CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
 
-import {LoginService} from '../services/login.service';
+import {AuthService} from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate, CanActivateChild {
 
-  constructor(private router: Router, private loginService: LoginService, ){}
+  constructor(private router: Router, private authService: AuthService, ){}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      return this.validateSession();
+        return this.validateSession();
   }
+
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      return this.validateSession();
+      const currentModule = childRoute.routeConfig?.path;
+      if(currentModule === 'home'){
+        return this.validateSession();
+      }
+      const currentMod = this.authService.existModule(currentModule ? currentModule : '');
+      return currentMod ? this.validateSession() : false;
   }
 
   private validateSession(): boolean {
-    if(this.loginService.userHasSession()){
-      return true;
-    }else{
-      this.loginService.clearLoginData();
+    const hasToken = this.authService.userHasSession();
+    if(!hasToken){
+      this.authService.clearLoginData();
       this.router.navigateByUrl('/login');
-      return false;
     }
+    return hasToken;
   }
 
 }

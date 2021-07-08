@@ -1,4 +1,4 @@
-<!--app-menubar></app-menubar-->
+
 <p-toast></p-toast>
 <p-table #dti [columns]="columNames" [value]="insurances" styleClass="p-datatable-striped" [rows]="10" [paginator]="true" [globalFilterFields]="['cliente']"
 [rowHover]="true" dataKey="id">
@@ -15,7 +15,7 @@
 
   <ng-template pTemplate="header" let-columns>
         <tr>
-            <th *ngFor="let col of columns" [class]="col.classParent">
+            <th *ngFor="let col of columns; let i = index" id="{{col.field}}{{i}}" [class]="col.classParent">
                 <div [class]="col.class">
                   {{col.header}}
                 </div>
