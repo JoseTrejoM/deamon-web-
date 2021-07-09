@@ -1,11 +1,11 @@
-<!--app-menubar></app-menubar-->
+
 <p-toast></p-toast>
 <p-table #dtc [columns]="columNames" [value]="customers" styleClass="p-datatable-striped p-datatable-responsive-demo" [rows]="10" [paginator]="true" [globalFilterFields]="['nombre']" [rowHover]="true" dataKey="id">
   <ng-template pTemplate="caption">
     <div class="p-d-flex p-ai-center p-jc-between">
       <p class="p-d-none p-d-md-inline-flex">Clientes</p>
-      <p-button type="button" icon="pi pi-plus" styleClass="p-button-rounded p-button-success p-shadow-24 p-d-md-none p-mr-2" (click)="openNew(fn)"></p-button>
-      <p-button type="button" label="Nuevo" icon="pi pi-plus" styleClass="p-button-rounded p-button-success p-shadow-24 p-d-none p-d-md-inline-flex" (click)="openNew(fn)"></p-button>
+      <p-button *ngIf="canCreate" type="button" icon="pi pi-plus" styleClass="p-button-rounded p-button-success p-shadow-24 p-d-md-none p-mr-2" (click)="openNew(fn)"></p-button>
+      <p-button *ngIf="canCreate" type="button" label="Nuevo" icon="pi pi-plus" styleClass="p-button-rounded p-button-success p-shadow-24 p-d-none p-d-md-inline-flex" (click)="openNew(fn)"></p-button>
       <span class="p-input-icon-left">
         <i class="pi pi-search"></i>
         <input pInputText type="text" (input)="dtc.filterGlobal($event.target.value, 'contains')" placeholder="Buscar cliente..." />
@@ -15,12 +15,12 @@
 
   <ng-template pTemplate="header" let-columns>
         <tr>
-            <th *ngFor="let col of columns" [class]="col.classParent">
+            <th *ngFor="let col of columns; let i = index" id="{{col.field}}{{i}}" [class]="col.classParent">
                 <div [class]="col.class">
                   {{col.header}}
                 </div>
             </th>
-            <th >&nbsp;</th>
+            <th id="last_th">&nbsp;</th>
         </tr>
     </ng-template>
 
@@ -32,8 +32,8 @@
                   </div>
               </td>
               <td class="aliginCommandButton">
-                <button pButton pRipple icon="pi pi-pencil" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-rounded p-shadow-24" (click)="editCustomer(customer)"></button>
-                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning p-shadow-24" (click)="deleteCustomer(customer)"></button>
+                <button *ngIf="canUpdate" pButton pRipple icon="pi pi-pencil" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-rounded p-shadow-24" (click)="editCustomer(customer)"></button>
+                <button *ngIf="canDelete" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning p-shadow-24" (click)="deleteCustomer(customer)"></button>
               </td>
           </tr>
       </ng-template>
@@ -61,7 +61,6 @@
     <div class="p-field">
       <label for="description">Fecha nacimiento</label>
       <p-inputMask #fechanacimiento name="fechanacimiento" mask="99/99/9999" [(ngModel)]="customer.fechanacimiento" placeholder="99/99/9999" slotChar="dd/mm/yyyy"></p-inputMask>
-      <!--p-calendar [(ngModel)]="customer.fechaNac" [style]="{width: '250px'}" yearRange="1980:2021" inputId="navigators"></p-calendar-->
       <p-message severity="error" *ngIf="fn.submitted && !customer.fechanacimiento"></p-message>
     </div>
 
@@ -82,7 +81,7 @@
   </ng-template>
 
   <ng-template pTemplate="footer">
-    <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveOrUpdateCustomer()"></button>
+    <button *ngIf="canCreate || canUpdate" pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-primary" (click)="saveOrUpdateCustomer()"></button>
     <button pButton pRipple label="Cancelar" icon="pi pi-times" style="background: #ff0391; border: 1px solid #ff0391;" class="p-button-pink" (click)="hideDialog()"></button>
   </ng-template>
 

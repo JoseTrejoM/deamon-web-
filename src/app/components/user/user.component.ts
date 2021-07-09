@@ -2,16 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import {UserService} from '../../services/user.service';
 import {User} from '../../models/user.model';
 
-import { ConfirmationService } from 'primeng/api';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 import Swal from 'sweetalert2';
 import { NgForm } from '@angular/forms';
+import { AuthService } from 'src/app/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
+import { Permission } from 'src/app/models/permission.model';
+import { CryptoService } from 'src/app/services/crypto.service';
 
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
-  styleUrls: ['./user.component.css'],
   providers: [MessageService, ConfirmationService]
 })
 export class UserComponent implements OnInit {
@@ -19,20 +21,54 @@ export class UserComponent implements OnInit {
   users: User[] = [];
   userNew!: User;
   showDialog: boolean = false;
-  userEmpty: User = {idUsuario: 0, correo: '', contrasenia: '', tipo: 'admin'};
+  isCreate: boolean = true;
+  userEmpty: User = { usuarioId: 0, rolId: 3, tipoUsuarioId: 1, estatusUsuarioId: 1, personaFisicaId: 0, usuario: '', iniciales: 'MLC', contrasena: '', puesto: 'USER', area: 'DEMO_MLC', intentos: 0, fechaAlta: new Date(), fechaUltimoAcceso: new Date(), foto: 'Empty' };
+  sisModId: string = '';
 
-  constructor(private userService: UserService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
+  canCreate: boolean = false;
+  canUpdate: boolean = false;
+  canDelete: boolean = false;
+
+  constructor(private userService: UserService, private messageService: MessageService, private confirmationService: ConfirmationService,
+    private authService: AuthService, private activatedRoute: ActivatedRoute, private cryptoService: CryptoService) { }
 
   ngOnInit(): void {
     this.userService.getCustomersAll().subscribe((data:User[])=>{
-      this.users = data.sort((a, b) => (a.correo.toUpperCase() > b.correo.toUpperCase()) ? 1 : -1);
+      data.sort((a, b) => (a.usuario.toUpperCase() > b.usuario.toUpperCase()) ? 1 : -1);
+      this.users = data;
     });
+
+    const mod = this.activatedRoute.routeConfig?.path;
+    const listPermissions = this.authService.existPermission(mod ? mod : '');
+    if(listPermissions){
+      this.getPermissions(listPermissions);
+    } else {
+      const currentModule = this.authService.existModule(mod ? mod : '');
+      const sisModId = currentModule?.sisModId ? currentModule?.sisModId : 0;
+      const currentUser = this.authService.currentUser();
+
+      this.authService.getPermission(sisModId, currentUser).subscribe((data: Permission[])=>{
+        const cryptPermissions = this.cryptoService.encrypt(JSON.stringify(data));
+        localStorage.setItem(mod+'Pers', cryptPermissions);
+        this.getPermissions(data);
+      },(err)=>{
+        console.log(err);
+      });
+    }
+
+  }
+
+  getPermissions(data: Permission[]){
+    this.canCreate = data.find(element => element.permisoId === 1) ? true : false;
+    this.canUpdate = data.find(element => element.permisoId === 2) ? true : false;
+    this.canDelete = data.find(element => element.permisoId === 3) ? true : false;
   }
 
   openNew(form: NgForm) {
     form.resetForm();
     this.userNew = {...this.userEmpty};
     this.showDialog = true;
+    this.isCreate = true;
   }
 
   hideDialog() {
@@ -42,12 +78,12 @@ export class UserComponent implements OnInit {
   editUser(user: User) {
     this.userNew = { ...user };
     this.showDialog = true;
+    this.isCreate = false;
   }
 
   deleteUser(user: User) {
-    //console.log(customer);
     this.confirmationService.confirm({
-      message: '¿Esta seguro de eliminar a ' + user.correo + '?',
+      message: '¿Esta seguro de eliminar a ' + user.usuario + '?',
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Si',
@@ -56,11 +92,11 @@ export class UserComponent implements OnInit {
       rejectButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.showLoading();
-        this.userService.deleteUsers(user.idUsuario).subscribe((data: User) => {
-          this.users = this.users.filter((val: User) => val.idUsuario !== data.idUsuario);
+        this.userService.deleteUsers(user.usuarioId).subscribe((data: User) => {
+          this.users = this.users.filter((val: User) => val.usuarioId !== data.usuarioId);
           this.withSuccess('Usuario eliminado');
         }, (err) => {
-          this.withError(err, 'Error al elimnar ' + user.correo);
+          this.withError(err, 'Error al elimnar ' + user.usuario);
           console.log(err);
         });
       }
@@ -68,12 +104,12 @@ export class UserComponent implements OnInit {
   }
 
   saveOrUpdateUser() {
-    if(!this.userNew.correo || !this.userNew.contrasenia){
+    if(!this.userNew.usuario || !this.userNew.contrasena){
       return;
     }
 
-    if (this.userNew.correo.trim()) {
-      if (this.userNew.idUsuario && this.userNew.idUsuario > 0) {
+    if (this.userNew.usuario.trim()) {
+      if (this.userNew.usuarioId && this.userNew.usuarioId > 0) {
         this.updateUser(this.userNew);
       } else {
         this.createUser(this.userNew);
@@ -85,8 +121,8 @@ export class UserComponent implements OnInit {
     this.showLoading();
     this.userService.createUsers(user).subscribe((data: User) => {
       this.users.push(data);
-      this.users = this.users.sort((a, b) => (a.correo.toUpperCase() > b.correo.toUpperCase()) ? 1 : -1);
-      this.withSuccess(data.correo + ' creado');
+      this.users.sort((a, b) => (a.usuario.toUpperCase() > b.usuario.toUpperCase()) ? 1 : -1);
+      this.withSuccess(data.usuario + ' creado');
     },(err) => {
       this.withError(err, 'El usuario ya existe');
       console.log(err);
@@ -96,9 +132,9 @@ export class UserComponent implements OnInit {
   private updateUser(user: User) {
     this.showLoading();
     this.userService.updateUsers(user).subscribe((data: User) => {
-      this.users[this.findIndexById(data.idUsuario)] = data;
-      this.users = this.users.sort((a, b) => (a.correo.toUpperCase() > b.correo.toUpperCase()) ? 1 : -1);
-      this.withSuccess(data.correo + ' actualizado');
+      this.users[this.findIndexById(data.usuarioId)] = data;
+      this.users.sort((a, b) => (a.usuario.toUpperCase() > b.usuario.toUpperCase()) ? 1 : -1);
+      this.withSuccess(data.usuario + ' actualizado');
     },(err) => {
       this.withError(err, 'Error al actualizar');
       console.log(err);
@@ -108,7 +144,7 @@ export class UserComponent implements OnInit {
   private findIndexById(idUsuario: number): number {
     let index = -1;
     for (let i = 0; i < this.users.length; i++) {
-      if (this.users[i].idUsuario === idUsuario) {
+      if (this.users[i].usuarioId === idUsuario) {
         index = i;
         break;
       }

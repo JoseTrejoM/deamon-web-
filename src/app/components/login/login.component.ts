@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { User } from 'src/app/models/user.model';
-import { LoginService } from 'src/app/services/login.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 import Swal from 'sweetalert2';
 
@@ -17,10 +17,11 @@ export class LoginComponent implements OnInit {
 
   user!: User;
 
-  constructor(private router: Router, private loginService: LoginService, private messageService: MessageService) { }
+  constructor(private router: Router, private authService: AuthService, private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.user = { idUsuario: 0, correo: '', contrasenia: '', tipo: '' };
+    this.user = { usuarioId: 0, rolId: 0, tipoUsuarioId: 0, estatusUsuarioId: 0, personaFisicaId: 0, usuario: '', iniciales: '', contrasena: '', puesto: '', area: '', intentos: 0, fechaAlta: new Date(), fechaUltimoAcceso: new Date(), foto: '' };
+    this.authService.clearLoginData();
   }
 
   loginIn(form: NgForm) {
@@ -29,7 +30,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.showLoading();
-    this.loginService.getValidateLogin(this.user).subscribe(
+    this.authService.getValidateLogin(this.user).subscribe(
       (data) => {
         Swal.close();
         this.router.navigateByUrl('/main');
@@ -44,7 +45,7 @@ export class LoginComponent implements OnInit {
   private withError(err: any, msgError: string) {
     Swal.close();
     let messageError = '';
-    if (err.status && err.status == 400) {
+    if (err.status && err.status == 401) {
       messageError = msgError;
     } else {
       messageError = 'Error inesperado intente mas tarde';

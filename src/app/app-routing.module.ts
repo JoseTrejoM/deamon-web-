@@ -12,11 +12,15 @@ import { MenubarComponent } from './components/menubar/menubar.component';
 
 const APP_ROUTES: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'main', component: MenubarComponent, canActivate: [AuthGuard], canActivateChild: [AuthGuard] },
-  { path: 'home', component: HomeComponent, outlet: 'mod', canActivate: [AuthGuard] },
-  { path: 'customer', component: CustomerComponent, outlet: 'mod', canActivate: [AuthGuard] },
-  { path: 'insurance', component: InsuranceComponent, outlet: 'mod', canActivate: [AuthGuard] },
-  { path: 'user', component: UserComponent, outlet: 'mod', canActivate: [AuthGuard] },
+  {
+    path: 'main', component: MenubarComponent, children: [
+      { path: 'home', component: HomeComponent },
+      { path: 'customer', component: CustomerComponent },
+      { path: 'insurance', component: InsuranceComponent },
+      { path: 'user', component: UserComponent },
+      { path: '**', pathMatch: 'full', redirectTo: 'home' }
+    ], canActivate: [AuthGuard], canActivateChild: [AuthGuard]
+  },
   { path: '**', pathMatch: 'full', redirectTo: 'login' }
 ];
 
