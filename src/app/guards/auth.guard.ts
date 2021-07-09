@@ -14,16 +14,13 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        return this.validateSession();
+      return this.validateSession();
   }
 
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
       const currentModule = childRoute.routeConfig?.path;
-      if(currentModule === 'home'){
-        return this.validateSession();
-      }
       const currentMod = this.authService.existModule(currentModule ? currentModule : '');
       return currentMod ? this.validateSession() : false;
   }

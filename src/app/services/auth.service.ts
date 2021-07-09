@@ -66,6 +66,8 @@ export class AuthService {
       const stringModules = this.cryptoService.decrypt(cryptModules? cryptModules : '');
       const listModules: Module[] = JSON.parse(stringModules);
       return listModules.find(element => element.url === mod);
+    } else if(mod === 'home'){
+      return {sisModId:0, nombre:'Inicio', url: 'home', imagen: 'pi pi-fw pi-home'};
     }
     return undefined;
   }

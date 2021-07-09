@@ -18,7 +18,6 @@ export class MenubarComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMenuItems();
-    this.router.navigate(['home'], {relativeTo: this.activatedRoute});
   }
 
   loadMenuItems(){
@@ -41,9 +40,6 @@ export class MenubarComponent implements OnInit {
           );
       });
       this.items = itemsTemp;
-
-      localMod = {sisModId:0, nombre:'main', url: 'main', imagen: ''};
-      data.push(localMod);
 
       const cryptModules = this.cryptoService.encrypt(JSON.stringify(data));
       localStorage.setItem('sisMods', cryptModules);
